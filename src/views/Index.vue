@@ -9,8 +9,10 @@
         <Grammar v-model="grammar"></Grammar>
       </div>
       <div>
-        <div class="key">
-          <div class="clear" @click="clearGrammar">归零</div>
+        <div class="key-board">
+          <div class="clear disable-selection" @click="clearGrammar">
+            <div style="width:100%">归零</div>
+          </div>
         </div>
       </div>
     </Container>
@@ -90,5 +92,35 @@ export default {
 }
 .status-item {
   margin: 0px 5px 0px 5px;
+}
+.key-board {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20px 0px 20px 0px;
+}
+.clear {
+  width: 100px;
+  height: 150px;
+  background: #e35b08;
+  text-align: center;
+  align-items: center;
+  display: flex;
+  font-size: 40px;
+  font-weight: 900;
+  border-radius: 5px;
+  -webkit-box-shadow: 10px 10px 300px -15px rgba(2, 3, 4, 1);
+  -moz-box-shadow: 10px 10px 300px -15px rgba(2, 3, 4, 1);
+  box-shadow: 10px 10px 300px -15px rgba(2, 3, 4, 1);
+}
+.clear:active {
+  background-color: #c64b2b;
+  font-size: 45px;
+}
+.disable-selection {
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer */
+  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+  -webkit-user-select: none; /* Chrome, Safari, and Opera */
+  -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 }
 </style>
