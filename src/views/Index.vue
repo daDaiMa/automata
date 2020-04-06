@@ -18,10 +18,22 @@
 </template>
 
 <script>
+const defaultGrammar = {
+  terminal: [{ literal: "ε", _id: 0 }],
+  variable: [{ literal: "S", _id: 0 }],
+  products: [
+    {
+      lhs: "S",
+      rhs: [{ symbols: [{ literal: "", _id: 0 }], _id: 0 }],
+      _id: 0
+    }
+  ]
+};
+import _ from "loadsh";
 export default {
   data() {
     return {
-      grammar: {},
+      grammar: _.cloneDeep(defaultGrammar),
       timestamp: ""
     };
   },
@@ -35,7 +47,7 @@ export default {
   methods: {
     clearGrammar() {
       console.log("clicked");
-      this.$set(this, "grammar", {});
+      this.$set(this, "grammar", _.cloneDeep(defaultGrammar));
     },
     getNow() {
       let fix = num => {

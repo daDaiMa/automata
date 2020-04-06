@@ -23,33 +23,15 @@
 </template>
 
 <script>
-import _ from "loadsh";
 export default {
   model: {
-    prop: "Grammar",
+    prop: "grammar",
     event: "grammarChanged"
   },
   props: {
-    Grammar: {
+    grammar: {
       type: Object
     }
-  },
-  data() {
-    return {
-      grammar: _.isEmpty(this.$props.Grammar)
-        ? {
-            terminal: [{ literal: "ε", _id: 0 }],
-            variable: [{ literal: "S", _id: 0 }],
-            products: [
-              {
-                lhs: "S",
-                rhs: [{ symbols: [{ literal: "", _id: 0 }], _id: 0 }],
-                _id: 0
-              }
-            ]
-          }
-        : JSON.parse(JSON.stringify(this.$props.Grammar))
-    };
   },
   watch: {
     grammar: {
@@ -64,6 +46,7 @@ export default {
   },
   methods: {
     grammarChanged() {
+      console.log("grammarChanged");
       this.$emit("grammarChanged", this.grammar);
     },
     async enterKeyDown(e) {
@@ -93,7 +76,15 @@ export default {
       if (this.grammar.products.length <= 1) {
         return;
       }
-      console.log(e);
+
+      // 如果产生式rhs还有的话 就不要删除这产生式
+      for (let rhs of this.grammar.products[e].rhs) {
+        for (let symbol of rhs.symbols) {
+          console.log(symbol);
+          if (symbol.literal) return;
+        }
+      }
+
       let vm = this;
       await this.$nextTick(() => {
         vm.$set(
