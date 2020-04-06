@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import _ from "loadsh";
 export default {
   props: {
     symbols: Array,
@@ -62,28 +63,26 @@ export default {
       }, 50);
     },
 
-    async deleteDown(e) {
+    async deleteDown(e, event) {
       if (!this.symbols[e].literal) {
+        event.preventDefault();
         let vm = this;
         if (e) {
-          await this.$nextTick(() => {
-            vm.$emit(
-              "symbolsChanged",
-              vm.symbols
-                .filter(item => {
-                  return item._id !== e;
-                })
-                .map((item, _id) => {
-                  return { ...item, _id };
-                })
-            );
-          });
-          setTimeout(() => {
-            vm.$refs[`input_${e - 1}`][0].focus();
-          }, 50);
+          let newSymbols = _.cloneDeep(vm.symbols);
+          vm.$emit(
+            "symbolsChanged",
+            newSymbols
+              .filter(item => {
+                return item._id !== e;
+              })
+              .map((item, _id) => {
+                return { ...item, _id };
+              })
+          );
+          vm.$refs[`input_${e - 1}`][0].focus();
         } else {
           if (this.symbols.length > 1) {
-            await this.$emit(
+            this.$emit(
               "symbolsChanged",
               vm.symbols.slice(1).map((item, _id) => {
                 return { ...item, _id };

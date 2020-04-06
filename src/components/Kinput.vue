@@ -5,7 +5,7 @@
       ref="input"
       @keydown.enter="$emit('enter-key',id)"
       @keydown.tab="$emit('tab-key',id)"
-      @keydown.delete="$emit('delete-key',id)"
+      @keydown.delete="$emit('delete-key',id,$event)"
       @keydown.space.prevent="$emit('space-key',id)"
       v-on:input="$emit('input',$event.target.value)"
       v-autowidth="{maxWidth: '960px', minWidth: '10px', comfortZone: 0}"
