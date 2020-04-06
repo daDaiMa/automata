@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width:800px;margin:auto">
     <Container>
       <div class="screen">
         <div class="status-bar">
@@ -10,8 +10,28 @@
       </div>
       <div>
         <div class="key-board">
+          <div class="other-key">
+              <div class="key-common">
+                ε
+              </div>
+              <div class="key-common">
+                消除左递归
+              </div>
+              <div class="key-common">
+                提取左公因式
+              </div>
+              <div class="key-common">
+                FIRST 
+              </div>
+              <div class="key-common">
+                FOLLOW 
+              </div>
+          </div>
+          <div>
           <div class="clear disable-selection" @click="clearGrammar">
             <div style="width:100%">归零</div>
+          </div>
+          <div class="action">=</div>
           </div>
         </div>
       </div>
@@ -96,7 +116,7 @@ export default {
 .key-board {
   display: flex;
   flex-wrap: wrap;
-  padding: 20px 0px 20px 0px;
+  padding: 20px 0px 0px 0px;
 }
 .clear {
   width: 100px;
@@ -122,5 +142,45 @@ export default {
   -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
   -webkit-user-select: none; /* Chrome, Safari, and Opera */
   -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+}
+.key-common{
+  background: #2f5c85;
+  font-size:20px;
+  margin-right: 10px;
+  box-sizing: border-box;
+  padding: 0px 20px 0px 20px;
+  height: 60px;
+  line-height: 60px;
+  border-radius: 5px;
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer */
+  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+  -webkit-user-select: none; /* Chrome, Safari, and Opera */
+  -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+}
+.other-key{
+  /* padding-left:10px ; */
+  display: flex;
+  flex:1;
+  flex-wrap: wrap;
+}
+
+.key-common:active{
+  background: #7ba1c7;
+  font-size: 25px;
+}
+.action{
+  margin-top: 10px;
+  width: 100px;
+  height: 70px;
+  line-height: 70px;
+  font-weight: 900;
+  font-size: 50px;
+  color: #020304;
+  border-radius: 5px;
+  background: white;
+}
+.action:active{
+  font-size: 55px;
 }
 </style>
