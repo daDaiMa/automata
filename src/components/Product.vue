@@ -73,10 +73,13 @@ export default {
       }
     },
     deleteKeyDown(e) {
+      let vm = this;
       if (!e) {
+        setTimeout(() => {
+          vm.$refs.lhs.focus();
+        }, 50);
         return;
       }
-      let vm = this;
       setTimeout(() => {
         vm.$set(
           vm.Product,
