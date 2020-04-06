@@ -11,27 +11,17 @@
       <div>
         <div class="key-board">
           <div class="other-key">
-              <div class="key-common">
-                ε
-              </div>
-              <div class="key-common">
-                消除左递归
-              </div>
-              <div class="key-common">
-                提取左公因式
-              </div>
-              <div class="key-common">
-                FIRST 
-              </div>
-              <div class="key-common">
-                FOLLOW 
-              </div>
+            <div class="key-common">ε</div>
+            <div class="key-common">消除左递归</div>
+            <div class="key-common">提取左公因式</div>
+            <div class="key-common">FIRST</div>
+            <div class="key-common">FOLLOW</div>
           </div>
           <div>
-          <div class="clear disable-selection" @click="clearGrammar">
-            <div style="width:100%">归零</div>
-          </div>
-          <div class="action">=</div>
+            <div class="clear disable-selection" @click="clearGrammar">
+              <div style="width:100%">归零</div>
+            </div>
+            <div class="action">=</div>
           </div>
         </div>
       </div>
@@ -128,13 +118,12 @@ export default {
   font-size: 40px;
   font-weight: 900;
   border-radius: 5px;
-  -webkit-box-shadow: 10px 10px 300px -15px rgba(2, 3, 4, 1);
-  -moz-box-shadow: 10px 10px 300px -15px rgba(2, 3, 4, 1);
-  box-shadow: 10px 10px 300px -15px rgba(2, 3, 4, 1);
+  box-shadow: 0 5px #c64b2b;
 }
 .clear:active {
-  background-color: #c64b2b;
-  font-size: 45px;
+  background-color: #e35b08;
+  box-shadow: 0 5px #e35b08;
+  transform: translateY(4px);
 }
 .disable-selection {
   -moz-user-select: none; /* Firefox */
@@ -143,33 +132,34 @@ export default {
   -webkit-user-select: none; /* Chrome, Safari, and Opera */
   -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 }
-.key-common{
-  background: #2f5c85;
-  font-size:20px;
+.key-common {
+  background: #7ba1c7;
+  font-size: 20px;
   margin-right: 10px;
   box-sizing: border-box;
   padding: 0px 20px 0px 20px;
   height: 60px;
   line-height: 60px;
   border-radius: 5px;
+  box-shadow: 0 5px #2f5c85;
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* Internet Explorer */
   -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
   -webkit-user-select: none; /* Chrome, Safari, and Opera */
   -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 }
-.other-key{
-  /* padding-left:10px ; */
+.other-key {
   display: flex;
-  flex:1;
+  flex: 1;
   flex-wrap: wrap;
 }
 
-.key-common:active{
+.key-common:active {
   background: #7ba1c7;
-  font-size: 25px;
+  box-shadow: 0 5px #7ba1c7;
+  transform: translateY(4px);
 }
-.action{
+.action {
   margin-top: 10px;
   width: 100px;
   height: 70px;
@@ -179,8 +169,13 @@ export default {
   color: #020304;
   border-radius: 5px;
   background: white;
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer */
+  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+  -webkit-user-select: none; /* Chrome, Safari, and Opera */
+  -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 }
-.action:active{
-  font-size: 55px;
+.action:active {
+  transform: translateY(4px);
 }
 </style>
