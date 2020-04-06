@@ -3,6 +3,7 @@
     <input
       v-bind:value="value"
       ref="input"
+      @keydown.enter="$emit('enter-key',id)" 
       @keydown.tab="$emit('tab-key',id)"
       @keydown.delete="$emit('delete-key',id)"
       v-on:input="$emit('input',$event.target.value)"
