@@ -8,7 +8,8 @@
           v-model="symbol.literal"
           @input="$emit('symbolsChanged',Symbols)"
           @tab-key="$emit('tab-key',id)"
-          @enter-key="enterkeyDown"
+          @space-key="spaceKeyDown"
+          @enter-key="$emit('enter-key',id)"
           @delete-key="deleteDown"
           :id="symbol._id"
           :ref="'input_'+symbol._id"
@@ -23,9 +24,9 @@ export default {
   props: {
     symbols: Array,
     id: Number,
-    separator:{
-      default:'',
-      type:String
+    separator: {
+      default: "",
+      type: String
     }
   },
   model: {
@@ -41,16 +42,13 @@ export default {
     Kinput: () => import("../components/Kinput")
   },
   methods: {
-    tabkeyDown(e) {
-      console.log(e);
-    },
     focusFirst() {
       this.$refs[`input_0`][0].focus();
     },
     focusLast() {
       this.$refs[`input_${this.Symbols.length - 1}`][0].focus();
     },
-    enterkeyDown(e) {
+    spaceKeyDown(e) {
       let vm = this;
       vm.$set(
         vm,
@@ -110,7 +108,7 @@ export default {
 .symbols {
   display: flex;
   align-items: center;
-  margin: 10px 0px 10px 0px;
+  /* margin: 10px 0px 10px 0px; */
 }
 .or {
   color: white;

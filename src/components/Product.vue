@@ -1,8 +1,14 @@
 <template>
   <div>
     <div class="product">
+      <slot></slot>
       <div>
-        <Kinput v-model="Product.lhs" @input="$emit('productChanged',Product)"></Kinput>
+        <Kinput
+          ref="lhs"
+          v-model="Product.lhs"
+          @input="$emit('productChanged',Product)"
+          @delete-key="lhsDeleteKeyDown"
+        ></Kinput>
       </div>
       <div class="arrow">→</div>
       <div v-for="(rhs,index) in Product.rhs" v-bind:key="rhs._id" class="spilt-and-symbols">
@@ -12,6 +18,7 @@
           v-model="rhs.symbols"
           @tab-key="tabKeyDown"
           @delete-key="deleteKeyDown"
+          @enter-key="$emit('enter-key',id)"
           @input="$emit('productChanged',Product)"
           :id="rhs._id"
         ></Symbols>
@@ -28,11 +35,12 @@ export default {
     event: "productChanged"
   },
   props: {
-    product: Object
+    product: Object,
+    id: Number
   },
   data() {
     return {
-      Product: this.$props.product
+      Product: JSON.parse(JSON.stringify(this.$props.product))
     };
   },
   components: {
@@ -40,6 +48,12 @@ export default {
     Symbols: () => import("../components/Symbols")
   },
   methods: {
+    focusLhs() {
+      this.$refs.lhs.focus();
+    },
+    foucusRhs() {
+      this.$refs["symbols_0"].focusFirst();
+    },
     tabKeyDown(e) {
       if (e + 1 === this.Product.rhs.length) {
         this.$set(
@@ -71,6 +85,11 @@ export default {
         );
         vm.$refs[`symbols_${e - 1}`][0].focusLast();
       }, 50);
+    },
+    lhsDeleteKeyDown() {
+      if (!this.Product.lhs.length) {
+        this.$emit("lhs-delete-key", this.id);
+      }
     }
   }
 };
