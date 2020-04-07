@@ -46,7 +46,6 @@ export default {
   },
   methods: {
     grammarChanged() {
-      console.log("grammarChanged");
       this.$emit("grammarChanged", this.grammar);
     },
     async enterKeyDown(e) {
@@ -80,7 +79,6 @@ export default {
       // 如果产生式rhs还有的话 就不要删除这产生式
       for (let rhs of this.grammar.products[e].rhs) {
         for (let symbol of rhs.symbols) {
-          console.log(symbol);
           if (symbol.literal) return;
         }
       }

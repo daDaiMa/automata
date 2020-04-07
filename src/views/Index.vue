@@ -3,19 +3,24 @@
     <Container>
       <div class="screen">
         <div class="status-bar">
+          <div class="tips" v-if="current_operation">当前选中操作:{{current_operation}}</div>
           <div class="status-item">{{timestamp}}</div>
           <div class="status-item">🔋100%</div>
         </div>
-        <Grammar v-model="grammar"></Grammar>
+        <div class="input-box">
+          <Grammar v-model="grammar"></Grammar>
+        </div>
       </div>
       <div>
         <div class="key-board">
           <div class="other-key">
-            <div class="key-common">ε</div>
-            <div class="key-common">消除左递归</div>
-            <div class="key-common">提取左公因式</div>
-            <div class="key-common">FIRST</div>
-            <div class="key-common">FOLLOW</div>
+            <div class="key-null">ε</div>
+            <div
+              v-for="key in otherKey"
+              v-bind:key="key.id"
+              v-bind:class="key.class"
+              @click="keyDown(key.id)"
+            >{{key.value}}</div>
           </div>
           <div>
             <div class="clear disable-selection" @click="clearGrammar">
@@ -46,7 +51,19 @@ export default {
   data() {
     return {
       grammar: _.cloneDeep(defaultGrammar),
-      timestamp: ""
+      timestamp: "",
+      otherKey: [
+        { value: "消除左递归" },
+        { value: "提取左公因式" },
+        { value: "FIRST" },
+        { value: "FOLLOW" }
+      ].map((item, id) => {
+        return {
+          ...item,
+          id: id,
+          class: { "key-common": true, "key-down": false }
+        };
+      })
     };
   },
   components: {
@@ -56,10 +73,28 @@ export default {
   created() {
     setInterval(this.getNow, 1000);
   },
+  computed: {
+    current_operation() {
+      let res = this.otherKey.filter(item => {
+        return item.class["key-down"];
+      });
+      return res && res[0] ? res[0].value : "";
+    }
+  },
   methods: {
     clearGrammar() {
       console.log("clicked");
       this.$set(this, "grammar", _.cloneDeep(defaultGrammar));
+    },
+    keyDown(id) {
+      this.$set(
+        this,
+        "otherKey",
+        this.otherKey.map(item => {
+          item.class["key-down"] = item.id === id && !item.class["key-down"];
+          return item;
+        })
+      );
     },
     getNow() {
       let fix = num => {
@@ -93,37 +128,26 @@ export default {
   box-sizing: border-box;
   background: rgb(0, 0, 0.5);
   border-radius: 10px;
-}
-.status-bar {
-  font-weight: 500;
-  display: flex;
-  justify-content: flex-end;
-  line-height: 30px;
-}
-.status-item {
-  margin: 0px 5px 0px 5px;
-}
-.key-board {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 20px 0px 0px 0px;
-}
-.clear {
-  width: 100px;
-  height: 150px;
-  background: #e35b08;
-  text-align: center;
-  align-items: center;
-  display: flex;
-  font-size: 40px;
-  font-weight: 900;
-  border-radius: 5px;
-  box-shadow: 0 5px #c64b2b;
-}
-.clear:active {
-  background-color: #e35b08;
-  box-shadow: 0 5px #e35b08;
-  transform: translateY(4px);
+
+  .input-box {
+    height: 500px;
+    overflow: scroll;
+  }
+  .status-bar {
+    font-weight: 500;
+    display: flex;
+    justify-content: flex-end;
+    line-height: 30px;
+    padding-bottom: 10px;
+  }
+  .status-item {
+    margin: 0px 5px 0px 5px;
+  }
+  .tips {
+    color: white;
+    text-align: left;
+    flex: 1;
+  }
 }
 .disable-selection {
   -moz-user-select: none; /* Firefox */
@@ -132,42 +156,76 @@ export default {
   -webkit-user-select: none; /* Chrome, Safari, and Opera */
   -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 }
-.key-common {
-  background: #7ba1c7;
-  font-size: 20px;
-  margin-right: 10px;
-  box-sizing: border-box;
-  padding: 0px 20px 0px 20px;
-  height: 60px;
-  line-height: 60px;
-  border-radius: 5px;
-  box-shadow: 0 5px #2f5c85;
-  .disable-selection()
-}
-.other-key {
+.key-board {
   display: flex;
-  flex: 1;
   flex-wrap: wrap;
-}
+  padding: 20px 0px 0px 0px;
+  .clear {
+    width: 100px;
+    height: 150px;
+    background: #e35b08;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    font-size: 40px;
+    font-weight: 900;
+    border-radius: 5px;
+    box-shadow: 0 5px #c64b2b;
+  }
+  .clear:active {
+    background-color: #e35b08;
+    box-shadow: 0 5px #e35b08;
+    transform: translateY(4px);
+  }
+  .key-common {
+    background: #7ba1c7;
+    font-size: 20px;
+    margin-right: 10px;
+    box-sizing: border-box;
+    padding: 0px 20px 0px 20px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 5px;
+    box-shadow: 0 5px #2f5c85;
+    .disable-selection();
+  }
+  .key-common:active {
+    background: #7ba1c7;
+  }
 
-.key-common:active {
-  background: #7ba1c7;
-  box-shadow: 0 5px #7ba1c7;
-  transform: translateY(4px);
-}
-.action {
-  margin-top: 10px;
-  width: 100px;
-  height: 70px;
-  line-height: 70px;
-  font-weight: 900;
-  font-size: 50px;
-  color: #020304;
-  border-radius: 5px;
-  background: white;
-  .disable-selection()
-}
-.action:active {
-  transform: translateY(4px);
+  .key-null {
+    .key-common();
+  }
+
+  .down {
+    box-shadow: none;
+    transform: translateY(4px);
+  }
+  .key-null:active {
+    .down();
+  }
+  .other-key {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+  .action {
+    margin-top: 10px;
+    width: 100px;
+    height: 70px;
+    line-height: 70px;
+    font-weight: 900;
+    font-size: 50px;
+    color: #020304;
+    border-radius: 5px;
+    background: white;
+    .disable-selection();
+  }
+  .action:active {
+    transform: translateY(4px);
+  }
+  .key-down {
+    .down();
+  }
 }
 </style>

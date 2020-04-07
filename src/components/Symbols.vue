@@ -102,7 +102,7 @@ export default {
 .symbols {
   display: flex;
   align-items: center;
-  /* margin: 10px 0px 10px 0px; */
+  flex-wrap: wrap;
 }
 .or {
   color: white;
