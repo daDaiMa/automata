@@ -10,6 +10,8 @@
   "dependencies": {
     "ant-design-vue": "^1.5.1",
     "core-js": "^3.6.4",
+    "less": "^3.11.1",
+    "less-loader": "^5.0.0",
     "loadsh": "^0.0.4",
     "lodash": "^4.17.15",
     "vue": "^2.6.11",

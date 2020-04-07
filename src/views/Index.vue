@@ -86,7 +86,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .screen {
   width: 100%;
   padding: 10px;
@@ -142,11 +142,7 @@ export default {
   line-height: 60px;
   border-radius: 5px;
   box-shadow: 0 5px #2f5c85;
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer */
-  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
-  -webkit-user-select: none; /* Chrome, Safari, and Opera */
-  -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+  .disable-selection()
 }
 .other-key {
   display: flex;
@@ -169,11 +165,7 @@ export default {
   color: #020304;
   border-radius: 5px;
   background: white;
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer */
-  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
-  -webkit-user-select: none; /* Chrome, Safari, and Opera */
-  -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+  .disable-selection()
 }
 .action:active {
   transform: translateY(4px);
