@@ -26,7 +26,7 @@
             <div class="clear disable-selection" @click="clearGrammar">
               <div style="width:100%">归零</div>
             </div>
-            <div class="action">=</div>
+            <div class="action" @click="fire">=</div>
           </div>
         </div>
       </div>
@@ -47,6 +47,7 @@ const defaultGrammar = {
   ]
 };
 import _ from "loadsh";
+import {conversion} from '@/utils/conversion'
 export default {
   data() {
     return {
@@ -82,6 +83,10 @@ export default {
     }
   },
   methods: {
+    fire(){
+      let res = conversion(this.grammar)
+      console.log(JSON.stringify(res))
+    },
     clearGrammar() {
       console.log("clicked");
       this.$set(this, "grammar", _.cloneDeep(defaultGrammar));
