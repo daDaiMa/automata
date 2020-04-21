@@ -1,15 +1,17 @@
 <template>
   <div id="app">
-    <div id="nav"></div>
     <router-view />
   </div>
 </template>
 
 <style>
-body{
-
-margin:0px;
-  background: rgb(97, 148, 167,0.8);
+body {
+  margin: 0px;
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(114, 135, 254),
+    rgb(130, 88, 186)
+  );
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -17,10 +19,9 @@ margin:0px;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-#nav {
+  height: 100vh;
   padding: 10px;
+  box-sizing: border-box;
 }
 
 #nav a {
