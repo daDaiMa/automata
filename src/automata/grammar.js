@@ -1,5 +1,5 @@
 import _ from 'loadsh'
-import { example } from '@/grammar-example'
+import { example_indirect_left_recursion } from '@/grammar-example'
 
 export const EPSILON = 'ε'
 export const END = '$'
@@ -14,33 +14,42 @@ function Grammar() {
         let number = parseInt(variable.split('-')[1]) || 0
         while (this.Variables.includes(base + '-' + number))
             base++
+        this.Variables = this.Variables.concat(base + '-' + number)
         return base + '-' + number
     }
-    this.removeDirectLeftRecursion = () => {
-        let rm = (product) => {
-            let new_lhs = NewVariable(product.lhs)
-            let new_product = _.cloneDeep(product)
-            new_product.lhs = new_lhs
-            product.rhs = product.rhs.filter(item => item[0] != product.lhs).map(item => {
-                return item.concat(new_lhs)
-            })
-            new_product.rhs = new_product.rhs.filter(item => item[0] === product.lhs).map(item => {
-                return item.slice(1).concat(new_lhs)
-            }).concat([[EPSILON]])
-            this.Products = this.Products.concat(new_product)
-            isDirRec(new_product) && rm(new_product)
+    let removeDirectLeftRecursion = (product) => {
+        let isDirRec = (p) => {
+            return Boolean(p.rhs.filter(rhs => rhs[0] === p.lhs).length)
         }
-        let isDirRec = (product) => {
-            for (let rhs of product.rhs) {
-                if (rhs[0] === product.lhs) return true
+        if (!isDirRec(product)) return
+        let new_lhs = NewVariable(product.lhs)
+        let new_product = _.cloneDeep(product)
+        new_product.lhs = new_lhs
+        product.rhs = product.rhs.filter(item => item[0] != product.lhs).map(item => {
+            return item.concat(new_lhs)
+        })
+        new_product.rhs = new_product.rhs.filter(item => item[0] === product.lhs).map(item => {
+            return item.slice(1).concat(new_lhs)
+        }).concat([[EPSILON]])
+        this.Products = this.Products.concat(new_product)
+    }
+    this.removeLeftRecursion = () => {
+        for (let i in this.Variables) {
+            let Ai = this.Variables[i]
+            let Pi = this.Products.filter(item => item.lhs === Ai)[0] || null
+            if (!Pi) continue
+            for (let j in this.Variables.slice(0, i)) {
+                let Aj = this.Variables[j]
+                let Pj = this.Products.filter(item => item.lhs === Aj)[0] || null
+                if (!Pi) continue
+                let new_rhs = Pi.rhs.filter(item => item[0] === Aj).reduce((acc, curr) => {
+                    return acc.concat(Pj.rhs.map(item => {
+                        return item.concat(curr.slice(1))
+                    }))
+                }, [])
+                Pi.rhs = Pi.rhs.filter(item => item[0] !== Aj).concat(new_rhs)
             }
-            return false
-        }
-        for (let product of this.Products) {
-            console.log(product)
-            if (isDirRec(product)) {
-                rm(product)
-            }
+            removeDirectLeftRecursion(Pi)
         }
     }
 }
@@ -71,15 +80,10 @@ export function ParserGrammar(obj) {
     return grammar
 }
 
-export function testParserGrammar() {
+export function testGrammar() {
     // console.log(ParserGrammar(example))
-    let grammar = ParserGrammar(example)
-    grammar.removeDirectLeftRecursion()
-    console.log(JSON.stringify(grammar.Products))
+    let grammar = ParserGrammar(example_indirect_left_recursion)
+    grammar.removeLeftRecursion()
+    console.log(JSON.stringify(grammar))
 }
 
-export function testRemoveDirectLeftRecursion() {
-    let grammar = ParserGrammar(example)
-    grammar.removeDirectLeftRecursion()
-    console.log(grammar.Products)
-}

@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import {testParserGrammar} from '@/automata/grammar'
+import {testGrammar} from '@/automata/grammar'
 export default {
   data() {
     return {};
@@ -16,7 +16,7 @@ export default {
     paper: () => import("../components/paper")
   },
   mounted(){
-    testParserGrammar()
+    testGrammar()
   },
   created() {},
   computed: {},
