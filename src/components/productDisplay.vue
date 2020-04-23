@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="product-container">
     <symbolList :symbolList="Product.lhs"></symbolList>
     <div class="arrow">→</div>
     <symbolsGroup :symbolsGroup="Product.rhs"></symbolsGroup>
@@ -8,12 +8,10 @@
 
 <script>
 export default {
+  name:"productDisplay",
   props: {
     product: {
       type: Object,
-    //   default: () => {
-    //     return { lhs: "A2", rhs: [["A3", "A1"], ["b"]] };
-    //   }
     }
   },
   computed: {
@@ -29,8 +27,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.container {
+.product-container {
   display: flex;
+  box-shadow: none;
   .arrow {
     font-size: 18px;
     font-weight: 900;

@@ -1,6 +1,5 @@
 <template>
-  <!-- <div class="grammar-box"> -->
-  <div class="container">
+  <div class="grammar-box">
     <div class="label-and-content">
       <div class="label">Terminal:</div>
       <symbolList :symbolList="Grammar.Terminal"></symbolList>
@@ -47,14 +46,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.container{
-  padding: 5px;
-      box-shadow:0 0px 3px  rgba(218, 220, 224, 0.8)
-}
-.grammar-box {
-  padding: 5px;
-      box-shadow:0 0px 3px  rgba(218, 220, 224, 0.8)
-}
 .line {
   margin-top: 5px;
 }
@@ -71,5 +62,9 @@ export default {
   .product-label {
     align-self: start;
   }
+}
+.grammar-box {
+  padding: 5px;
+  box-shadow: 0 0px 3px rgba(218, 220, 224, 0.8);
 }
 </style>

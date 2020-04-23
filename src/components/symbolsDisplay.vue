@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="symbols-container">
     <div class="body">
       <div v-for="symbol in symbols" v-bind:key="symbol._id" class="symbol-box">{{symbol.literal}}</div>
     </div>
@@ -11,7 +11,6 @@ export default {
   name: "symbolsDisplay",
   props: {
     symbolList: {
-      // default: () => ["if", "(", "expr", ")", "stmt"],
       type: Array
     }
   },
@@ -28,8 +27,9 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.container {
+.symbols-container {
   display: inline-block;
+  box-shadow: none;
   .body {
     display: flex;
     flex-wrap: wrap;

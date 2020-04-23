@@ -18,21 +18,14 @@ export default {
   name: "symbolsGroup",
   props: {
     symbolsGroup: {
-      // default: () => [
-      //   ["if", "(", "expr", ")", "stmt"],
-      //   ["while", "(", "expr", ")"]
-      // ],
       type: Array
     }
   },
   computed: {
     sym_G() {
-      // console.log('symbolsGroup',this.symbolsGroup)
-      let res = this.symbolsGroup.map((item, _id) => {
+      return this.symbolsGroup.map((item, _id) => {
         return { list: item, _id };
       });
-      // console.log('transform symbolsGroup',res)
-      return res;
     }
   },
   components: {
