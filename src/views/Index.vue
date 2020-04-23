@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import {testGrammar} from '@/automata/grammar'
+import { testGrammar } from "@/automata/grammar";
 export default {
   data() {
     return {};
@@ -15,11 +15,20 @@ export default {
     calcu: () => import("../components/calcu"),
     paper: () => import("../components/paper")
   },
-  mounted(){
-    testGrammar()
+  computed: {
+    instruction() {
+      return this.$store.state.calcuInstruction;
+    }
+  },
+  watch: {
+    instruction(){
+      console.log(this.instruction)
+    }
+  },
+  mounted() {
+    testGrammar();
   },
   created() {},
-  computed: {},
   methods: {}
 };
 </script>
@@ -29,7 +38,7 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.paper{
+.paper {
   flex: 1;
 }
 </style>

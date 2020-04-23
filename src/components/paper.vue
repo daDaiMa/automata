@@ -8,7 +8,16 @@ export default {
   data() {
     return {};
   },
-  watch: {}
+  computed: {
+    instruction() {
+      return this.$store.state.calcuInstruction;
+    }
+  },
+  watch: {
+    instruction() {
+      console.log(JSON.stringify(this.instruction));
+    }
+  }
 };
 </script>
 

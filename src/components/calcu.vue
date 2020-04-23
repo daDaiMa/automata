@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import {Calculate} from '../store/actions'
 const defaultGrammar = {
   terminal: [{ literal: "ε", _id: 0 }],
   variable: [{ literal: "S", _id: 0 }],
@@ -85,6 +86,7 @@ export default {
   methods: {
     fire() {
       console.log(JSON.stringify(this.grammar));
+      Calculate(this.$store,this.grammar)
     },
     clearGrammar() {
       console.log("clicked");
