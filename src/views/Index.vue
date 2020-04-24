@@ -22,7 +22,7 @@ export default {
   },
   watch: {
     instruction(){
-      console.log(this.instruction)
+      // console.log(this.instruction)
     }
   },
   mounted() {

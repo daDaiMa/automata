@@ -5,28 +5,12 @@
 </template>
 
 <script>
-// import { ParserGrammar } from "../automata/grammar";
+import { ParserGrammar } from "../automata/grammar";
 export default {
   name: "",
   data() {
     return {
-      grammar: {
-        Terminal: ["ε", "a", "b"],
-        Variables: ["A1", "A2", "A3", "A3-0"],
-        Products: [
-          { lhs: "A1", rhs: [["A2", "A3"]] },
-          { lhs: "A2", rhs: [["A3", "A1"], ["b"]] },
-          {
-            lhs: "A3",
-            rhs: [
-              ["a", "A3-0"],
-              ["b", "A3", "A1", "A3-0"]
-            ]
-          },
-          { lhs: "A3-0", rhs: [["A1", "A3", "A1", "A3-0"], ["ε"]] }
-        ],
-        Entry: "A1"
-      }
+      grammar: {}
     };
   },
   computed: {
@@ -42,8 +26,16 @@ export default {
   },
   watch: {
     instruction() {
-      console.log(JSON.stringify(this.instruction));
-      // let g = ParserGrammar(this.instruction);
+      console.log('instruction',JSON.stringify(this.instruction));
+      let grammar = ParserGrammar(this.instruction.grammar);
+      switch (this.instruction.operation) {
+        case "消除左递归":
+          grammar.removeLeftRecursion();
+          break;
+        default:
+          break;
+      }
+      this.$set(this, "grammar", grammar);
     }
   }
 };

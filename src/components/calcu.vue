@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import {Calculate} from '../store/actions'
+import { Calculate } from "../store/actions";
 const defaultGrammar = {
   terminal: [{ literal: "ε", _id: 0 }],
   variable: [{ literal: "S", _id: 0 }],
@@ -85,12 +85,21 @@ export default {
   },
   methods: {
     fire() {
-      console.log(JSON.stringify(this.grammar));
-      Calculate(this.$store,this.grammar)
+      Calculate(this.$store, {
+        grammar: this.grammar,
+        operation: this.current_operation
+      });
     },
     clearGrammar() {
-      console.log("clicked");
       this.$set(this, "grammar", _.cloneDeep(defaultGrammar));
+      this.$set(
+        this,
+        "otherKey",
+        this.otherKey.map(item => {
+          item.class["key-down"] = false;
+          return item;
+        })
+      );
     },
     keyDown(id) {
       this.$set(

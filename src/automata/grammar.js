@@ -84,6 +84,6 @@ export function testGrammar() {
     // console.log(ParserGrammar(example))
     let grammar = ParserGrammar(example_indirect_left_recursion)
     grammar.removeLeftRecursion()
-    console.log(JSON.stringify(grammar))
+    // console.log(JSON.stringify(grammar))
 }
 

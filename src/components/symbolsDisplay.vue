@@ -16,12 +16,9 @@ export default {
   },
   computed: {
     symbols() {
-      console.log(this.symbolList)
-      let res = this.symbolList.map((symbol, _id) => {
+      return this.symbolList.map((symbol, _id) => {
         return { _id, literal: symbol };
       });
-      console.log('fuck',res)
-      return res;
     }
   }
 };

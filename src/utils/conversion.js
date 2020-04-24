@@ -1,6 +1,6 @@
 
 export function conversion(grammar) {
-    console.log(JSON.stringify(grammar))
+    // console.log(JSON.stringify(grammar))
     let res = {
         terminal: grammar.terminal.map(item => { return item.literal }),
         variable: grammar.variable.map(item => { return item.literal }),

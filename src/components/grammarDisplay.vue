@@ -30,6 +30,18 @@ export default {
   },
   computed: {
     Grammar() {
+      if (
+        !this.grammar ||
+        !this.grammar.Products ||
+        !this.grammar.Terminal ||
+        !this.grammar.Variables
+      ) {
+        return {
+          Terminal: [],
+          Variables: [],
+          Products: []
+        };
+      }
       return {
         ...this.grammar,
         Products: this.grammar.Products.map((product, _id) => {
@@ -66,5 +78,6 @@ export default {
 .grammar-box {
   padding: 5px;
   box-shadow: 0 0px 3px rgba(218, 220, 224, 0.8);
+  border-radius: 5px;
 }
 </style>
