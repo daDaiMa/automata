@@ -1,18 +1,20 @@
 <template>
   <div class="grammar-box">
-    <div class="label-and-content">
-      <div class="label">Terminal:</div>
-      <symbolList :symbolList="Grammar.Terminal"></symbolList>
-    </div>
-    <div class="label-and-content">
-      <div class="label">Variable:</div>
-      <symbolList class="line" :symbolList="Grammar.Variables"></symbolList>
-    </div>
-    <div class="label-and-content">
-      <div class="label product-label">Products:</div>
-      <div>
-        <div class="line" v-for="product in Grammar.Products" v-bind:key="product._id">
-          <product :product="product.product"></product>
+    <div class="scroll-box">
+      <div class="label-and-content">
+        <div class="label">Terminal:</div>
+        <symbolList :symbolList="Grammar.Terminal"></symbolList>
+      </div>
+      <div class="label-and-content">
+        <div class="label">Variable:</div>
+        <symbolList class="line" :symbolList="Grammar.Variables"></symbolList>
+      </div>
+      <div class="label-and-content">
+        <div class="label product-label">Products:</div>
+        <div>
+          <div class="line" v-for="product in Grammar.Products" v-bind:key="product._id">
+            <product :product="product.product"></product>
+          </div>
         </div>
       </div>
     </div>
@@ -79,5 +81,9 @@ export default {
   padding: 5px;
   box-shadow: 0 0px 3px rgba(218, 220, 224, 0.8);
   border-radius: 5px;
+  .scroll-box {
+    overflow-x: scroll;
+    // 没实现效果 todo:以后实现
+  }
 }
 </style>

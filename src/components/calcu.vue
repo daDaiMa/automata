@@ -1,5 +1,5 @@
 <template>
-  <div style="width:800px;">
+  <div style="min-width:700px;width:800px">
     <Container>
       <div class="screen">
         <div class="status-bar">
