@@ -6,5 +6,8 @@ export default {
     },
     [type.OUTPUT](state, { data }) {
         state.calcuOutput = data
+    },
+    [type.TESTOUT](state, { data }) {
+        state.testGrammar = data
     }
 }

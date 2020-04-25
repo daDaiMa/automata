@@ -1,24 +1,9 @@
-# automata
+# 自动鸡架
 
-## Project setup
-```
-yarn install
-```
+##### 消除左递归
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+![image-20200425214036581](README.assets/image-20200425214036581.png)
 
-### Compiles and minifies for production
-```
-yarn build
-```
+##### 提取左公因子
 
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![image-20200425213808251](README.assets/image-20200425213808251.png)

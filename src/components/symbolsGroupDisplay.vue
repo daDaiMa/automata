@@ -6,7 +6,7 @@
         v-for="(symbols,index) in sym_G"
         v-bind:key="symbols._id"
       >
-        <div class="separator" v-if="index">|</div>
+        <div class="separator" v-if="index&&symbols.list.length">|</div>
         <symbolList :symbolList="symbols.list"></symbolList>
       </div>
     </div>
@@ -24,7 +24,7 @@ export default {
   computed: {
     sym_G() {
       return this.symbolsGroup.map((item, _id) => {
-        return { list: item, _id };
+        return { list: item.filter(i => i), _id };
       });
     }
   },

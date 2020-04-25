@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { testGrammar } from "@/automata/grammar";
 export default {
   data() {
     return {};
@@ -21,13 +20,11 @@ export default {
     }
   },
   watch: {
-    instruction(){
+    instruction() {
       // console.log(this.instruction)
     }
   },
-  mounted() {
-    testGrammar();
-  },
+  mounted() {},
   created() {},
   methods: {}
 };

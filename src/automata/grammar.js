@@ -1,5 +1,10 @@
 import _ from 'loadsh'
-import { example_indirect_left_recursion } from '@/grammar-example'
+import {
+    // example_indirect_left_recursion,
+    example_left_common_factor
+} from '@/grammar-example'
+import { TestGrammarOut } from '../store/actions'
+import store from '../store'
 
 export const EPSILON = 'ε'
 export const END = '$'
@@ -52,6 +57,72 @@ function Grammar() {
             removeDirectLeftRecursion(Pi)
         }
     }
+    let findLeftCommonFactor = (product) => {
+        let symbolsList = [...product.rhs]
+        // 先排序
+        let sortedIndex = symbolsList.map((symbols, idx) => {
+            return {
+                str: symbols.join(),
+                idx
+            }
+        }).sort((a, b) => (a.str > b.str) ? 1 : -1).map(item => item.idx)
+
+        // 然后找公共最长子前缀,并且给出区间
+        let left = -1
+        let right = - 1
+        let maxItemNumber = 0
+
+        // todo: 优化 如果有两个最长公因子 可以一起提取
+        for (const [i] of sortedIndex.entries()) {
+            if (i === sortedIndex.length - 1) break
+            let symbolsA = symbolsList[sortedIndex[i]]
+            let symbolsB = symbolsList[sortedIndex[i + 1]]
+            let k = 0
+            for (k = 0; k < symbolsA.length && k < symbolsB.length; k++) {
+                if (symbolsA[k] !== symbolsB[k]) break;
+            }
+            if (!k) continue;
+            if (maxItemNumber === k) {
+                i === right ? right += 1 : (left = i, right = i + 1)
+            } else if (maxItemNumber < k) {
+                maxItemNumber = k
+                left = i
+                right = left + 1
+            }
+        }
+
+
+        if (left >= 0) {
+            let target = sortedIndex.slice(left, right + 1)
+            let commonPrefix = symbolsList[target[0]].slice(0, maxItemNumber)
+            let new_variable = NewVariable(product.lhs)
+            let new_product = { lhs: new_variable, rhs: [] }
+            for (const idx of target) {
+                let left = symbolsList[idx].slice(maxItemNumber)
+                left.length || (left = [EPSILON])
+                new_product.rhs = new_product.rhs.concat([left])
+            }
+            product.rhs = product.rhs.filter((_, idx) => !target.includes(idx))
+            product.rhs = product.rhs.concat([[...commonPrefix, new_variable]])
+            this.Products = this.Products.concat(new_product)
+            return {
+                left,
+                right,
+                maxItemNumber,
+                new_product
+            }
+        }
+        return null
+    }
+
+    this.extracLeftCommonFactor = () => {
+        let queue = [...this.Products]
+        while (queue && queue.length) {
+            let res = findLeftCommonFactor(queue.pop())
+            res && queue.push(res.new_product)
+        }
+    }
+
 }
 
 export function ParserGrammar(obj) {
@@ -80,10 +151,11 @@ export function ParserGrammar(obj) {
     return grammar
 }
 
-export function testGrammar() {
+export function RunGrammarTest() {
     // console.log(ParserGrammar(example))
-    let grammar = ParserGrammar(example_indirect_left_recursion)
-    grammar.removeLeftRecursion()
-    // console.log(JSON.stringify(grammar))
+    let grammar = ParserGrammar(example_left_common_factor)
+    grammar.extracLeftCommonFactor()
+    console.log('[TEST LOG]:', JSON.stringify(grammar))
+    TestGrammarOut(store, grammar)
 }
 

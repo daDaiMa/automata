@@ -17,7 +17,7 @@ export default {
   computed: {
     symbols() {
       return this.symbolList.map((symbol, _id) => {
-        return { _id, literal: symbol };
+        if (symbol) return { _id, literal: symbol };
       });
     }
   }

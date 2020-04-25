@@ -5,3 +5,7 @@ export const Calculate = ({ commit }, data) => {
 export const StroeOutput = ({ commit }, data) => {
     commit(type.OUTPUT, { data })
 }
+
+export const TestGrammarOut = ({ commit }, data) => {
+    commit(type.TESTOUT, { data })
+}

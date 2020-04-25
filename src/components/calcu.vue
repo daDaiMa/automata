@@ -56,7 +56,7 @@ export default {
       timestamp: "",
       otherKey: [
         { value: "消除左递归" },
-        { value: "提取左公因式" },
+        { value: "提取左公因子" },
         { value: "FIRST" },
         { value: "FOLLOW" }
       ].map((item, id) => {
