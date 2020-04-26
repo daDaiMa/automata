@@ -2,7 +2,8 @@ import _ from 'loadsh'
 import {
     // example_indirect_left_recursion,
     // example_left_common_factor
-    example_first
+    // example_first
+    example_nullable
 } from '@/grammar-example'
 import { TestGrammarOut } from '../store/actions'
 import store from '../store'
@@ -16,8 +17,9 @@ function Grammar() {
     this.Products = []
     this.first = {}
     this.follow = {}
+    this.nullable = new Set()
     this.Entry = null
-    let NewVariable = (variable) => {
+    const NewVariable = (variable) => {
         let base = variable.split('-')[0]
         let number = parseInt(variable.split('-')[1]) || 0
         while (this.Variables.includes(base + '-' + number))
@@ -60,7 +62,7 @@ function Grammar() {
             removeDirectLeftRecursion(Pi)
         }
     }
-    let findLeftCommonFactor = (product) => {
+    const findLeftCommonFactor = (product) => {
         let symbolsList = [...product.rhs]
         // 先排序
         let sortedIndex = symbolsList.map((symbols, idx) => {
@@ -124,9 +126,37 @@ function Grammar() {
             res && queue.push(res.new_product)
         }
     }
+    this.calcuNullable = () => {
+        let setChange = true
+        while (setChange) {
+            setChange = false
+            for (const p of this.Products) {
+                if (this.nullable.has(p.lhs)) continue
+                for (const rhs of p.rhs) {
+                    if (rhs.length === 0 || rhs.length === 1 && rhs[0] === EPSILON) {
+                        this.nullable.add(p.lhs)
+                        setChange = true
+                        break
+                    }
+                    let idx = 0
+                    for (idx = 0; idx < rhs.length; idx++) {
+                        let symbol = rhs[idx]
+                        if (!this.Variables.includes(symbol) || !this.nullable.has(symbol))
+                            break
+                    }
+                    if (idx === rhs.length) {
+                        this.nullable.add(p.lhs)
+                        setChange = true
+                        break
+                    }
+                }
+            }
+        }
+    }
     this.calcuFirst = () => {
         let setChange = true
         let productMap = {}
+        this.calcuNullable()
         for (const v of this.Variables) {
             this.first[v] = new Set()
             productMap[v] = this.Products.filter(p => p.lhs === v)
@@ -138,25 +168,56 @@ function Grammar() {
                 let rhsGroup = productMap[v] ? productMap[v].rhs : null
                 if (!rhsGroup) continue
                 for (const rhs of rhsGroup) {
-                    if (this.Terminal.includes(rhs[0]) && !this.first[v].has(rhs[0])) {
+                    // 1.terminal 
+                    if (this.Terminal.includes(rhs[0]) && !this.first[v].has(rhs[0]) && rhs[0] !== EPSILON) {
                         this.first[v].add(rhs[0])
                         setChange = true
                     }
-                    if (this.Variables.includes(rhs[0])) {
-                        for (let item of this.first[rhs[0]]) {
+                    // 2.variable处理
+                    for (const symbol of rhs) {
+                        for (let item of this.first[symbol] || []) {
                             if (!this.first[v].has(item)) {
                                 this.first[v].add(item)
                                 setChange = true
                             }
                         }
+                        if (!this.nullable.has(symbol)) break
                     }
                 }
-                console.log(v, this.first)
             }
         }
     }
     this.calcuFollow = () => {
-
+        let setChange = true
+        this.calcuNullable()
+        this.calcuFirst()
+        for (const variable of this.Variables) this.follow[variable] = new Set()
+        while (setChange) {
+            setChange = false
+            for (const p of this.Products) {
+                for (const rhs of p.rhs) {
+                    let tmp = this.follow[p.lhs] || new Set()
+                    for (let index = rhs.length - 1; index >= 0; index--) {
+                        let currsymbol = rhs[index]
+                        if (this.Terminal.includes(currsymbol)) {
+                            tmp = new Set([currsymbol])
+                        } else {
+                            let ori_size = this.follow[currsymbol].size
+                            for (const follow of tmp) {
+                                this.follow[currsymbol].add(follow)
+                            }
+                            if (ori_size !== this.follow[currsymbol].size)
+                                setChange = true
+                            if (this.nullable.has(currsymbol)) {
+                                for (const first of this.first[currsymbol]) tmp.add(first)
+                            } else {
+                                tmp = this.first[currsymbol]
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
@@ -191,14 +252,16 @@ export function ParserGrammar(obj) {
 }
 
 export function RunGrammarTest() {
-    let grammar = ParserGrammar(example_first)
+    let grammar = ParserGrammar(example_nullable)
     // grammar.extracLeftCommonFactor()
-    grammar.calcuFirst()
+    grammar.calcuFollow()
+    // grammar.calcuNullable()
     // stringify 不能直接处理set
     for (const key of grammar.Variables) {
-        grammar.first[key] = Array.from(grammar.first[key])
-        // grammar.follow[key] = Array.from(grammar.follow[key])
+        grammar.first[key] && (grammar.first[key] = Array.from(grammar.first[key]))
+        grammar.follow[key] && (grammar.follow[key] = Array.from(grammar.follow[key]))
     }
+    grammar.nullable = Array.from(grammar.nullable)
     console.log('[TEST LOG]:', JSON.stringify(grammar))
     console.log('[TEST LOG]:', grammar)
     TestGrammarOut(store, grammar)

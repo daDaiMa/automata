@@ -21,16 +21,31 @@
         </div>
       </div>
       <!-- first -->
-      <div v-if="Object.keys(Grammar.first).length">
-        <div class="first-label">FIRST</div>
-        <div
-          class="label-and-content line"
-          v-for="variable in Grammar.Variables"
-          v-bind:key="variable"
-        >
-          <div class="label">{{variable}}: {</div>
-          <symbolList :symbolList="Grammar.first[variable]"></symbolList>
-          <div class="label">}</div>
+      <div style="display:flex;margin-top:10px">
+        <div v-if="Object.keys(Grammar.first).length">
+          <div class="first-label">FIRST</div>
+          <div
+            class="label-and-content line"
+            v-for="variable in Grammar.Variables"
+            v-bind:key="variable"
+          >
+            <div class="label">{{variable}}: {</div>
+            <symbolList :symbolList="Grammar.first[variable]"></symbolList>
+            <div class="label">}</div>
+          </div>
+        </div>
+        <!-- follow -->
+        <div style="margin-left:10px" v-if="Object.keys(Grammar.follow).length">
+          <div class="first-label">FOLLOW</div>
+          <div
+            class="label-and-content line"
+            v-for="variable in Grammar.Variables"
+            v-bind:key="variable"
+          >
+            <div class="label">{{variable}}: {</div>
+            <symbolList :symbolList="Grammar.follow[variable]"></symbolList>
+            <div class="label">}</div>
+          </div>
         </div>
       </div>
     </div>

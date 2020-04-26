@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Symbols v-model="grammar.terminal" separator=",">
+    <Symbols v-model="grammar.terminal">
       <h3 class="label">Terminal:</h3>
     </Symbols>
-    <Symbols v-model="grammar.variable" separator=",">
+    <Symbols v-model="grammar.variable">
       <h3 class="label">Varibale:</h3>
     </Symbols>
     <div v-for="(product,index) in grammar.products" v-bind:key="product._id">
