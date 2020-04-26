@@ -1,7 +1,8 @@
 import _ from 'loadsh'
 import {
     // example_indirect_left_recursion,
-    example_left_common_factor
+    // example_left_common_factor
+    example_first
 } from '@/grammar-example'
 import { TestGrammarOut } from '../store/actions'
 import store from '../store'
@@ -13,6 +14,8 @@ function Grammar() {
     this.Terminal = []
     this.Variables = []
     this.Products = []
+    this.first = {}
+    this.follow = {}
     this.Entry = null
     let NewVariable = (variable) => {
         let base = variable.split('-')[0]
@@ -114,13 +117,46 @@ function Grammar() {
         }
         return null
     }
-
     this.extracLeftCommonFactor = () => {
         let queue = [...this.Products]
         while (queue && queue.length) {
             let res = findLeftCommonFactor(queue.pop())
             res && queue.push(res.new_product)
         }
+    }
+    this.calcuFirst = () => {
+        let setChange = true
+        let productMap = {}
+        for (const v of this.Variables) {
+            this.first[v] = new Set()
+            productMap[v] = this.Products.filter(p => p.lhs === v)
+            productMap[v] = productMap[v].length ? productMap[v][0] : null
+        }
+        while (setChange) {
+            setChange = false
+            for (const v of this.Variables) {
+                let rhsGroup = productMap[v] ? productMap[v].rhs : null
+                if (!rhsGroup) continue
+                for (const rhs of rhsGroup) {
+                    if (this.Terminal.includes(rhs[0]) && !this.first[v].has(rhs[0])) {
+                        this.first[v].add(rhs[0])
+                        setChange = true
+                    }
+                    if (this.Variables.includes(rhs[0])) {
+                        for (let item of this.first[rhs[0]]) {
+                            if (!this.first[v].has(item)) {
+                                this.first[v].add(item)
+                                setChange = true
+                            }
+                        }
+                    }
+                }
+                console.log(v, this.first)
+            }
+        }
+    }
+    this.calcuFollow = () => {
+
     }
 
 }
@@ -131,6 +167,9 @@ export function ParserGrammar(obj) {
     grammar.Terminal = obj.terminal.map(item => item.literal)
     grammar.Variables = obj.variable.map(item => item.literal)
     grammar.Entry = grammar.Variables[0]
+    // :todo 处理一下lhs相同的产生式 然后合并
+    // :todo 在合适的地方(不一定要在这里) 做一些语法合法性的检测
+    // :其实这个函数主要是转换，  从 用户输入 ===> 方便处理的语法
     grammar.Products = obj.products.map(item => {
         return {
             lhs: item.lhs,
@@ -152,10 +191,16 @@ export function ParserGrammar(obj) {
 }
 
 export function RunGrammarTest() {
-    // console.log(ParserGrammar(example))
-    let grammar = ParserGrammar(example_left_common_factor)
-    grammar.extracLeftCommonFactor()
+    let grammar = ParserGrammar(example_first)
+    // grammar.extracLeftCommonFactor()
+    grammar.calcuFirst()
+    // stringify 不能直接处理set
+    for (const key of grammar.Variables) {
+        grammar.first[key] = Array.from(grammar.first[key])
+        // grammar.follow[key] = Array.from(grammar.follow[key])
+    }
     console.log('[TEST LOG]:', JSON.stringify(grammar))
+    console.log('[TEST LOG]:', grammar)
     TestGrammarOut(store, grammar)
 }
 

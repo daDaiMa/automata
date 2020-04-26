@@ -1,20 +1,36 @@
 <template>
   <div class="grammar-box">
     <div class="scroll-box">
+      <!-- 终止符 -->
       <div class="label-and-content">
         <div class="label">Terminal:</div>
         <symbolList :symbolList="Grammar.Terminal"></symbolList>
       </div>
+      <!-- 变量 -->
       <div class="label-and-content">
         <div class="label">Variable:</div>
         <symbolList class="line" :symbolList="Grammar.Variables"></symbolList>
       </div>
+      <!-- 产生式 -->
       <div class="label-and-content">
         <div class="label product-label">Products:</div>
         <div>
           <div class="line" v-for="product in Grammar.Products" v-bind:key="product._id">
             <product :product="product.product"></product>
           </div>
+        </div>
+      </div>
+      <!-- first -->
+      <div v-if="Object.keys(Grammar.first).length">
+        <div class="first-label">FIRST</div>
+        <div
+          class="label-and-content line"
+          v-for="variable in Grammar.Variables"
+          v-bind:key="variable"
+        >
+          <div class="label">{{variable}}: {</div>
+          <symbolList :symbolList="Grammar.first[variable]"></symbolList>
+          <div class="label">}</div>
         </div>
       </div>
     </div>
@@ -63,19 +79,24 @@ export default {
 .line {
   margin-top: 5px;
 }
+.label {
+  padding: 5px;
+  font-size: 18px;
+  font-weight: 900;
+  // height: 35px;
+  box-sizing: border-box;
+}
 .label-and-content {
   display: flex;
   align-items: center;
-  .label {
-    padding: 5px;
-    font-size: 18px;
-    font-weight: 900;
-    // height: 35px;
-    box-sizing: border-box;
-  }
   .product-label {
     align-self: start;
   }
+}
+.first-label {
+  .label();
+  // font-weight: 900;
+  text-align: left;
 }
 .grammar-box {
   padding: 5px;
