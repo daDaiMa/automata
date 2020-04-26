@@ -220,8 +220,42 @@ function Grammar() {
         }
     }
 
+    /***
+     * 计算单个产生式的FIRST eg. p -> ⍺ 
+     * 注意😯 是 单！个！
+     * 其实就是计算产生式rhs(右部)串的FIRST啦 
+     * 计算这个主要是为了制作LL(1)预测表
+     */
+    this.calcuProductFisrt = () => {
+        let res = []
+        let id = 0
+        for (const product of this.Products) {
+            for (const rhs of product.rhs) {
+                let single = {
+                    id,
+                    first: new Set(),
+                    product: { lhs: product.lhs, rhs: rhs }
+                }
+                console.log(rhs)
+                if (!rhs) {
+                    console.log('fuck')
+                    continue
+                }
+                for (const symbol of rhs) {
+                    if (this.Terminal.includes(symbol)) {
+                        symbol !== EPSILON && single.first.add(symbol)
+                        break
+                    }
+                    for (const first of this.first[symbol] || []) single.first.add(first)
+                    if (!this.nullable.has(symbol)) break
+                }
+                id++
+                res.push(single)
+            }
+        }
+        return res
+    }
 }
-
 export function ParserGrammar(obj) {
     let grammar = new Grammar()
     obj = _.cloneDeep(obj)
@@ -250,11 +284,11 @@ export function ParserGrammar(obj) {
     // }, [])
     return grammar
 }
-
 export function RunGrammarTest() {
     let grammar = ParserGrammar(example_nullable)
     // grammar.extracLeftCommonFactor()
     grammar.calcuFollow()
+    console.log(grammar.calcuProductFisrt())
     // grammar.calcuNullable()
     // stringify 不能直接处理set
     for (const key of grammar.Variables) {
@@ -262,7 +296,7 @@ export function RunGrammarTest() {
         grammar.follow[key] && (grammar.follow[key] = Array.from(grammar.follow[key]))
     }
     grammar.nullable = Array.from(grammar.nullable)
-    console.log('[TEST LOG]:', JSON.stringify(grammar))
+    // console.log('[TEST LOG]:', JSON.stringify(grammar))
     console.log('[TEST LOG]:', grammar)
     TestGrammarOut(store, grammar)
 }
