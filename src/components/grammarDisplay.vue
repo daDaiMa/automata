@@ -21,7 +21,7 @@
         </div>
       </div>
       <!-- first -->
-      <div style="display:flex;margin-top:10px">
+      <div class="grammar-calcu-box">
         <div v-if="Object.keys(Grammar.first).length">
           <div class="first-label">FIRST</div>
           <div
@@ -35,7 +35,7 @@
           </div>
         </div>
         <!-- follow -->
-        <div style="margin-left:10px" v-if="Object.keys(Grammar.follow).length">
+        <div v-if="Object.keys(Grammar.follow).length">
           <div class="first-label">FOLLOW</div>
           <div
             class="label-and-content line"
@@ -44,6 +44,22 @@
           >
             <div class="label">{{variable}}: {</div>
             <symbolList :symbolList="Grammar.follow[variable]"></symbolList>
+            <div class="label">}</div>
+          </div>
+        </div>
+        <!-- product first -->
+        <div v-if="Object.keys(Grammar.ProductFirst).length">
+          <div class="label">Product FIRST</div>
+          <div
+            class="label-and-content line"
+            v-for="product in Grammar.ProductFirst"
+            v-bind:key="product.id"
+          >
+            <div>
+              <product :product="product.product"></product>
+            </div>
+            <div class="label">: {</div>
+            <symbolList :symbolList="product.first"></symbolList>
             <div class="label">}</div>
           </div>
         </div>
@@ -91,6 +107,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.grammar-calcu-box {
+  display: flex;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
 .line {
   margin-top: 5px;
 }
@@ -98,6 +120,7 @@ export default {
   padding: 5px;
   font-size: 18px;
   font-weight: 900;
+  text-align: left;
   // height: 35px;
   box-sizing: border-box;
 }

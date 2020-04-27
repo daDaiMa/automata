@@ -15,6 +15,7 @@ function Grammar() {
     this.Terminal = []
     this.Variables = []
     this.Products = []
+    this.ProductFirst = []
     this.first = {}
     this.follow = {}
     this.nullable = new Set()
@@ -229,6 +230,7 @@ function Grammar() {
     this.calcuProductFisrt = () => {
         let res = []
         let id = 0
+        this.calcuFollow()
         for (const product of this.Products) {
             for (const rhs of product.rhs) {
                 let single = {
@@ -236,24 +238,30 @@ function Grammar() {
                     first: new Set(),
                     product: { lhs: product.lhs, rhs: rhs }
                 }
-                console.log(rhs)
-                if (!rhs) {
-                    console.log('fuck')
-                    continue
-                }
+                let productNullable = true
                 for (const symbol of rhs) {
                     if (this.Terminal.includes(symbol)) {
+                        productNullable = false
                         symbol !== EPSILON && single.first.add(symbol)
+                        symbol === EPSILON && (productNullable = true)
                         break
                     }
                     for (const first of this.first[symbol] || []) single.first.add(first)
-                    if (!this.nullable.has(symbol)) break
+                    if (!this.nullable.has(symbol)) {
+                        productNullable = false
+                        break
+                    }
                 }
+                if (productNullable)
+                    for (const follow of this.follow[product.lhs]) single.first.add(follow)
                 id++
+                // 数据处理 方便展示
+                single.product.rhs = [single.product.rhs]
+                single.first = Array.from(single.first).sort()
                 res.push(single)
             }
         }
-        return res
+        this.ProductFirst = res
     }
 }
 export function ParserGrammar(obj) {
@@ -287,15 +295,15 @@ export function ParserGrammar(obj) {
 export function RunGrammarTest() {
     let grammar = ParserGrammar(example_nullable)
     // grammar.extracLeftCommonFactor()
-    grammar.calcuFollow()
-    console.log(grammar.calcuProductFisrt())
+    // grammar.calcuFollow()
+    grammar.calcuProductFisrt()
     // grammar.calcuNullable()
     // stringify 不能直接处理set
     for (const key of grammar.Variables) {
-        grammar.first[key] && (grammar.first[key] = Array.from(grammar.first[key]))
-        grammar.follow[key] && (grammar.follow[key] = Array.from(grammar.follow[key]))
+        grammar.first[key] && (grammar.first[key] = Array.from(grammar.first[key])).sort()
+        grammar.follow[key] && (grammar.follow[key] = Array.from(grammar.follow[key])).sort()
     }
-    grammar.nullable = Array.from(grammar.nullable)
+    grammar.nullable = Array.from(grammar.nullable).sort()
     // console.log('[TEST LOG]:', JSON.stringify(grammar))
     console.log('[TEST LOG]:', grammar)
     TestGrammarOut(store, grammar)
