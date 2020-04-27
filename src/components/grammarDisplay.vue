@@ -1,67 +1,68 @@
 <template>
   <div class="grammar-box">
-    <div class="scroll-box">
-      <!-- 终止符 -->
-      <div class="label-and-content">
-        <div class="label">Terminal:</div>
-        <symbolList :symbolList="Grammar.Terminal"></symbolList>
-      </div>
-      <!-- 变量 -->
-      <div class="label-and-content">
-        <div class="label">Variable:</div>
-        <symbolList class="line" :symbolList="Grammar.Variables"></symbolList>
-      </div>
-      <!-- 产生式 -->
-      <div class="label-and-content">
-        <div class="label product-label">Products:</div>
-        <div>
-          <div class="line" v-for="product in Grammar.Products" v-bind:key="product._id">
-            <product :product="product.product"></product>
+    <div class="grammar-calcu-box">
+      <div>
+        <!-- 终止符 -->
+        <div class="label-and-content">
+          <div class="label">Terminal:</div>
+          <symbolList :symbolList="Grammar.Terminal"></symbolList>
+        </div>
+        <!-- 变量 -->
+        <div class="label-and-content">
+          <div class="label">Variable:</div>
+          <symbolList class="line" :symbolList="Grammar.Variables"></symbolList>
+        </div>
+        <!-- 产生式 -->
+        <div class="label-and-content">
+          <div class="label product-label">Products:</div>
+          <div>
+            <div class="line" v-for="product in Grammar.Products" v-bind:key="product._id">
+              <product :product="product.product"></product>
+            </div>
           </div>
         </div>
       </div>
       <!-- first -->
-      <div class="grammar-calcu-box">
-        <div v-if="Object.keys(Grammar.first).length">
-          <div class="first-label">FIRST</div>
-          <div
-            class="label-and-content line"
-            v-for="variable in Grammar.Variables"
-            v-bind:key="variable"
-          >
-            <div class="label">{{variable}}: {</div>
-            <symbolList :symbolList="Grammar.first[variable]"></symbolList>
-            <div class="label">}</div>
-          </div>
+      <div v-if="Object.keys(Grammar.first).length">
+        <div class="first-label">FIRST</div>
+        <div
+          class="label-and-content line"
+          v-for="variable in Grammar.Variables"
+          v-bind:key="variable"
+        >
+          <div class="label">{{variable}}: {</div>
+          <symbolList :symbolList="Grammar.first[variable]"></symbolList>
+          <div class="label">}</div>
         </div>
-        <!-- follow -->
-        <div v-if="Object.keys(Grammar.follow).length">
-          <div class="first-label">FOLLOW</div>
-          <div
-            class="label-and-content line"
-            v-for="variable in Grammar.Variables"
-            v-bind:key="variable"
-          >
-            <div class="label">{{variable}}: {</div>
-            <symbolList :symbolList="Grammar.follow[variable]"></symbolList>
-            <div class="label">}</div>
-          </div>
+      </div>
+      <!-- follow -->
+      <div v-if="Object.keys(Grammar.follow).length">
+        <div class="first-label">FOLLOW</div>
+        <div
+          class="label-and-content line"
+          v-for="variable in Grammar.Variables"
+          v-bind:key="variable"
+        >
+          <div class="label">{{variable}}: {</div>
+          <symbolList :symbolList="Grammar.follow[variable]"></symbolList>
+          <div class="label">}</div>
         </div>
-        <!-- product first -->
-        <div v-if="Object.keys(Grammar.ProductFirst).length">
-          <div class="label">Product FIRST</div>
-          <div
-            class="label-and-content line"
-            v-for="product in Grammar.ProductFirst"
-            v-bind:key="product.id"
-          >
-            <div>
-              <product :product="product.product"></product>
-            </div>
-            <div class="label">: {</div>
-            <symbolList :symbolList="product.first"></symbolList>
-            <div class="label">}</div>
+      </div>
+      <!-- product first -->
+      <div v-if="Object.keys(Grammar.ProductFirst).length">
+        <div class="label">Product FIRST</div>
+        <div
+          class="label-and-content line"
+          v-for="product in Grammar.ProductFirst"
+          v-bind:key="product.id"
+        >
+          <div class="product-id">{{product.id}}</div>
+          <div>
+            <product :product="product.product"></product>
           </div>
+          <div class="label">: {</div>
+          <symbolList :symbolList="product.first"></symbolList>
+          <div class="label">}</div>
         </div>
       </div>
     </div>
@@ -116,6 +117,18 @@ export default {
 .line {
   margin-top: 5px;
 }
+.product-id {
+  height: 20px;
+  border-radius: 20px;
+  min-width: 20px;
+  font-size: 18px;
+  font-weight: 900;
+  background: whitesmoke;
+  line-height: 20px;
+  text-align: center;
+  margin-right: 5px;
+  box-sizing: border-box;
+}
 .label {
   padding: 5px;
   font-size: 18px;
@@ -140,9 +153,5 @@ export default {
   padding: 5px;
   box-shadow: 0 0px 3px rgba(218, 220, 224, 0.8);
   border-radius: 5px;
-  .scroll-box {
-    overflow-x: scroll;
-    // 没实现效果 todo:以后实现
-  }
 }
 </style>
