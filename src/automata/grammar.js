@@ -18,6 +18,7 @@ function Grammar() {
     this.ProductFirst = []
     this.first = {}
     this.follow = {}
+    this.LL1 = {}
     this.nullable = new Set()
     this.Entry = null
     const NewVariable = (variable) => {
@@ -263,6 +264,25 @@ function Grammar() {
         }
         this.ProductFirst = res
     }
+    this.calcuLL1 = () => {
+        // 依赖
+        this.calcuProductFisrt()
+        // 初始化
+        this.LL1 = {}
+        this.Variables.forEach(variable => {
+            this.LL1[variable] = {}
+            this.Terminal.forEach(terminal => {
+                this.LL1[variable][terminal] = []
+            })
+        })
+        // 开始计算
+        this.ProductFirst.forEach(product => {
+            product.first.forEach(terminal => {
+                this.LL1[product.product.lhs][terminal] =
+                    this.LL1[product.product.lhs][terminal].concat(product.id)
+            })
+        })
+    }
 }
 export function ParserGrammar(obj) {
     let grammar = new Grammar()
@@ -296,7 +316,8 @@ export function RunGrammarTest() {
     let grammar = ParserGrammar(example_nullable)
     // grammar.extracLeftCommonFactor()
     // grammar.calcuFollow()
-    grammar.calcuProductFisrt()
+    // grammar.calcuProductFisrt()
+    grammar.calcuLL1()
     // grammar.calcuNullable()
     // stringify 不能直接处理set
     for (const key of grammar.Variables) {

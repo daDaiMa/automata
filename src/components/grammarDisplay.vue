@@ -65,6 +65,19 @@
           <div class="label">}</div>
         </div>
       </div>
+      <div v-if="Object.keys(Grammar.LL1).length">
+        <div class="label">LL(1) Table</div>
+        <table class="ll1-table">
+          <th v-for="terminal in ['',...Grammar.Terminal]" v-bind:key="terminal">{{terminal}}</th>
+          <tr v-for=" variable in Grammar.Variables" v-bind:key="variable">
+            <td>{{variable}}</td>
+            <td
+              v-for="terminal in Grammar.Terminal"
+              v-bind:key="terminal"
+            >{{Grammar.LL1[variable][terminal].join()}}</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -108,6 +121,28 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.ll1-table {
+  // border: 1px solid whitesmoke;
+  font-size: 18px;
+  font-weight: 900;
+  tr > :first-child {
+    background: whitesmoke;
+  }
+  td {
+    border: 2px solid whitesmoke;
+    border-radius: 5px;
+    padding: 5px;
+  }
+  th:first-child {
+    background: none;
+  }
+  th {
+    background: whitesmoke;
+    border-radius: 5px;
+    border: 2px solid whitesmoke;
+    padding: 5px;
+  }
+}
 .grammar-calcu-box {
   display: flex;
   margin-top: 10px;
@@ -118,13 +153,13 @@ export default {
   margin-top: 5px;
 }
 .product-id {
-  height: 20px;
-  border-radius: 20px;
-  min-width: 20px;
+  height: 22px;
+  border-radius: 22px;
+  min-width: 22px;
   font-size: 18px;
   font-weight: 900;
   background: whitesmoke;
-  line-height: 20px;
+  // line-height: 22px;
   text-align: center;
   margin-right: 5px;
   box-sizing: border-box;
