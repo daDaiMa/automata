@@ -58,7 +58,9 @@ export default {
         { value: "消除左递归" },
         { value: "提取左公因子" },
         { value: "FIRST" },
-        { value: "FOLLOW" }
+        { value: "FOLLOW" },
+        { value: "Product FIRST" },
+        { value: "LL(1) TABLE" }
       ].map((item, id) => {
         return {
           ...item,

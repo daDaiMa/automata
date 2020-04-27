@@ -203,7 +203,7 @@ function Grammar() {
                         let currsymbol = rhs[index]
                         if (this.Terminal.includes(currsymbol)) {
                             tmp = new Set([currsymbol])
-                        } else {
+                        } else if (this.Variables.includes(currsymbol)) {
                             let ori_size = this.follow[currsymbol].size
                             for (const follow of tmp) {
                                 this.follow[currsymbol].add(follow)
@@ -283,6 +283,13 @@ function Grammar() {
             })
         })
     }
+    this.format = () => {
+        for (const key of this.Variables) {
+            this.first[key] && (this.first[key] = Array.from(this.first[key]).sort())
+            this.follow[key] && (this.follow[key] = Array.from(this.follow[key]).sort())
+        }
+        this.nullable = Array.from(this.nullable).sort()
+    }
 }
 export function ParserGrammar(obj) {
     let grammar = new Grammar()
@@ -320,12 +327,8 @@ export function RunGrammarTest() {
     grammar.calcuLL1()
     // grammar.calcuNullable()
     // stringify 不能直接处理set
-    for (const key of grammar.Variables) {
-        grammar.first[key] && (grammar.first[key] = Array.from(grammar.first[key])).sort()
-        grammar.follow[key] && (grammar.follow[key] = Array.from(grammar.follow[key])).sort()
-    }
-    grammar.nullable = Array.from(grammar.nullable).sort()
     // console.log('[TEST LOG]:', JSON.stringify(grammar))
+    grammar.format()
     console.log('[TEST LOG]:', grammar)
     TestGrammarOut(store, grammar)
 }

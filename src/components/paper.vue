@@ -38,9 +38,22 @@ export default {
         case "提取左公因子":
           grammar.extracLeftCommonFactor();
           break;
+        case "FIRST":
+          grammar.calcuFirst();
+          break;
+        case "FOLLOW":
+          grammar.calcuFollow();
+          break;
+        case "Product FIRST":
+          grammar.calcuProductFisrt();
+          break;
+        case "LL(1) TABLE":
+          grammar.calcuLL1();
+          break;
         default:
           break;
       }
+      grammar.format();
       this.$set(this, "grammar", grammar);
     },
     testGrammar(curr) {
