@@ -8,7 +8,8 @@ export default new Vuex.Store({
   state: {
     calcuInstruction: null, // 计算器中输入的语法和选择的操作
     calcuOutput: null, // 计算结果
-    testGrammar: null //测试专用
+    testGrammar: null, //测试专用
+    grammarFromRes: null
   },
   mutations,
   actions,

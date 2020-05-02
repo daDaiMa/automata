@@ -3,23 +3,51 @@ import {
     // example_indirect_left_recursion,
     // example_left_common_factor
     // example_first
-    example_nullable
+    // example_nullable
+    example_closure
 } from '@/grammar-example'
 import { TestGrammarOut } from '../store/actions'
 import store from '../store'
 
 export const EPSILON = 'ε'
 export const END = '$'
-
+function Products() {
+    this.Products = {}
+    /**
+     *  this.Products = {
+     *      A:[{id,lhs:A,rhs},{id,lhs:A,rhs}]
+     *  } 
+     */
+    let id = 0
+    this.init = (_products) => {
+        let products = _.cloneDeep(_products)
+        if (!Array.isArray(products)) products = [products] // 统一 方便处理
+        products.forEach(product => {
+            if (!product.rhs.length) return
+            if (!Array.isArray(product.rhs[0])) product.rhs = [product.rhs] // 统一 方便处理
+            product.rhs.forEach(rhs => {
+                if (!this.Products[product.lhs]) this.Products[product.lhs] = []
+                this.Products[product.lhs].push({
+                    id,
+                    lhs: product.lhs,
+                    rhs
+                })
+                id++
+            })
+        })
+    }
+}
 function Grammar() {
     this.Terminal = []
     this.Variables = []
     this.Products = []
+    this.SingleProduct = null // 单个产生式 非连写 === !(A--->B|C) ===> [A--->B,A--->C]
     this.ProductFirst = []
     this.first = {}
     this.follow = {}
     this.LL1 = {}
     this.nullable = new Set()
+    this.I = []
     this.Entry = null
     const NewVariable = (variable) => {
         let base = variable.split('-')[0]
@@ -224,7 +252,7 @@ function Grammar() {
 
     /***
      * 计算单个产生式的FIRST eg. p -> ⍺ 
-     * 注意😯 是 单！个！
+     * 注意😯是 单！个！
      * 其实就是计算产生式rhs(右部)串的FIRST啦 
      * 计算这个主要是为了制作LL(1)预测表
      */
@@ -283,6 +311,47 @@ function Grammar() {
             })
         })
     }
+
+    /**
+     * 计算项集的闭包
+     * @param {Object} I 项集
+     */
+    const calcuCLOSURE = (I) => {
+        /**
+         * I = [{
+         *         id,
+         *         products=[{
+         *                 id,
+         *                 readIndex,
+         *                 lhs,
+         *                 rhs
+         *         }]
+         *     }]
+         */
+        let changed = true
+        while (changed) {
+            changed = false
+            I.products.forEach(product => {
+                if (product.readIndex === product.rhs.length) return // 读取的符号(.) 已经在产生式rhs的最右端了
+                let next = product.rhs[product.readIndex]
+                if (this.Terminal.includes(next)) return // terminal 不管
+                this.SingleProduct[next].forEach(sp => {
+                    let p = I.products.filter(_p => _p.id === sp.id && _p.readIndex === 0)
+                    if (p.length) return
+                    let singleProductCopy = _.cloneDeep(sp)
+                    singleProductCopy.readIndex = 0
+                    I.products.push(singleProductCopy)
+                    changed = true
+                })
+            })
+        }
+    }
+
+    this.cacluLR0 = () => {
+        calcuCLOSURE()
+    }
+
+
     this.format = () => {
         for (const key of this.Variables) {
             this.first[key] && (this.first[key] = Array.from(this.first[key]).sort())
@@ -291,16 +360,16 @@ function Grammar() {
         this.nullable = Array.from(this.nullable).sort()
     }
 }
-export function ParserGrammar(obj) {
+export function ParserGrammar(inputGrammar) {
     let grammar = new Grammar()
-    obj = _.cloneDeep(obj)
-    grammar.Terminal = obj.terminal.map(item => item.literal)
-    grammar.Variables = obj.variable.map(item => item.literal)
+    inputGrammar = _.cloneDeep(inputGrammar)
+    grammar.Terminal = inputGrammar.terminal.map(item => item.literal)
+    grammar.Variables = inputGrammar.variable.map(item => item.literal)
     grammar.Entry = grammar.Variables[0]
     // :todo 处理一下lhs相同的产生式 然后合并
     // :todo 在合适的地方(不一定要在这里) 做一些语法合法性的检测
     // :其实这个函数主要是转换，  从 用户输入 ===> 方便处理的语法
-    grammar.Products = obj.products.map(item => {
+    grammar.Products = inputGrammar.products.map(item => {
         return {
             lhs: item.lhs,
             rhs: item.rhs.map(rhs => {
@@ -308,19 +377,11 @@ export function ParserGrammar(obj) {
             })
         }
     })
-    // 拆开一个一个
-    // grammar.products = obj.products.reduce((acc, curr) => {
-    //     return acc.concat(curr.rhs.map(rhs => {
-    //         return {
-    //             lhs: curr.lhs,
-    //             rhs: rhs.symbols.map(sym => sym.literal)
-    //         }
-    //     }))
-    // }, [])
+    grammar.SingleProduct = new Products(grammar.Products)
     return grammar
 }
 export function RunGrammarTest() {
-    let grammar = ParserGrammar(example_nullable)
+    let grammar = ParserGrammar(example_closure)
     // grammar.extracLeftCommonFactor()
     // grammar.calcuFollow()
     // grammar.calcuProductFisrt()

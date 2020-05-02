@@ -9,5 +9,8 @@ export default {
     },
     [type.TESTOUT](state, { data }) {
         state.testGrammar = data
+    },
+    [type.GRAMMAR_FROM_RES](state, { data }) {
+        state.grammarFromRes = data
     }
 }

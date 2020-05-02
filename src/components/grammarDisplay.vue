@@ -21,6 +21,7 @@
             </div>
           </div>
         </div>
+        <button class="copy-to-calcu" @click="copy2calcu">拷贝到计算器</button>
       </div>
       <!-- first -->
       <div v-if="Object.keys(Grammar.first).length">
@@ -83,6 +84,8 @@
 </template>
 
 <script>
+import _ from "loadsh";
+import { SendGrammarToCalcu } from "@/store/actions";
 export default {
   name: "grammarDisplay",
 
@@ -116,6 +119,40 @@ export default {
   components: {
     symbolList: () => import("../components/symbolsDisplay"),
     product: () => import("../components/productDisplay")
+  },
+  methods: {
+    copy2calcu() {
+      let g = {
+        terminal: _.cloneDeep(this.Grammar.Terminal).map((literal, _id) => {
+          return {
+            _id,
+            literal
+          };
+        }),
+        variable: _.cloneDeep(this.Grammar.Variables).map((literal, _id) => {
+          return {
+            _id,
+            literal
+          };
+        }),
+        products: _.cloneDeep(this.Grammar.Products).map((product, _id) => {
+          console.log(product);
+          return {
+            _id,
+            lhs: product.product.lhs,
+            rhs: product.product.rhs.map((rhs, _id) => {
+              return {
+                _id,
+                symbols: rhs.map((literal, _id) => {
+                  return { _id, literal };
+                })
+              };
+            })
+          };
+        })
+      };
+      SendGrammarToCalcu(this.$store, g);
+    }
   }
 };
 </script>
@@ -188,5 +225,21 @@ export default {
   padding: 5px;
   box-shadow: 0 0px 3px rgba(218, 220, 224, 0.8);
   border-radius: 5px;
+}
+.disable-selection {
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer */
+  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+  -webkit-user-select: none; /* Chrome, Safari, and Opera */
+  -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+}
+.copy-to-calcu {
+  background: whitesmoke;
+  border-radius: 5px;
+  margin: 15px auto;
+  font-weight: 900;
+  font-size: 18px;
+  width: 140px;
+  .disable-selection();
 }
 </style>

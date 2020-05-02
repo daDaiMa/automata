@@ -83,6 +83,14 @@ export default {
         return item.class["key-down"];
       });
       return res && res[0] ? res[0].value : "";
+    },
+    grammarFromRes() {
+      return this.$store.state.grammarFromRes;
+    }
+  },
+  watch: {
+    grammarFromRes(curr) {
+      this.$set(this, "grammar", curr);
     }
   },
   methods: {
