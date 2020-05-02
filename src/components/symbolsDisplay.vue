@@ -1,7 +1,12 @@
 <template>
   <div class="symbols-container">
     <div class="body">
-      <div v-for="symbol in symbols" v-bind:key="symbol._id" class="symbol-box">{{symbol.literal}}</div>
+      <div v-for="(symbol ,index) in symbols" v-bind:key="symbol._id">
+        <div style="display:flex;margin-left:2px">
+          <div v-if="index===readIndex" class="dot-flag">🌕</div>
+          <div class="symbol-box">{{symbol.literal}}</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -12,6 +17,10 @@ export default {
   props: {
     symbolList: {
       type: Array
+    },
+    readIndex: {
+      type: Number,
+      default: -1
     }
   },
   computed: {
@@ -24,6 +33,11 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.dot-flag {
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
 .symbols-container {
   display: inline-block;
   box-shadow: none;

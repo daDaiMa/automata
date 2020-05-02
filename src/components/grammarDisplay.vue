@@ -79,6 +79,11 @@
           </tr>
         </table>
       </div>
+      <div v-if="Grammar.I&&Grammar.I.length">
+        <div v-for="I in Grammar.I" v-bind:key="I.id">
+          <closure :closure="I"></closure>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -118,7 +123,8 @@ export default {
   },
   components: {
     symbolList: () => import("../components/symbolsDisplay"),
-    product: () => import("../components/productDisplay")
+    product: () => import("../components/productDisplay"),
+    closure: () => import("../components/closureDisPlay")
   },
   methods: {
     copy2calcu() {
