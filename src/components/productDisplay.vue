@@ -8,10 +8,10 @@
 
 <script>
 export default {
-  name:"productDisplay",
+  name: "productDisplay",
   props: {
     product: {
-      type: Object,
+      type: Object
     }
   },
   computed: {

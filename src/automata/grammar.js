@@ -11,15 +11,15 @@ import store from '../store'
 
 export const EPSILON = 'ε'
 export const END = '$'
-function Products() {
+function Products(_GrammarProducts) {
     this.Products = {}
     /**
      *  this.Products = {
      *      A:[{id,lhs:A,rhs},{id,lhs:A,rhs}]
      *  } 
      */
-    let id = 0
     this.init = (_products) => {
+        let id = 0
         let products = _.cloneDeep(_products)
         if (!Array.isArray(products)) products = [products] // 统一 方便处理
         products.forEach(product => {
@@ -36,6 +36,7 @@ function Products() {
             })
         })
     }
+    this.init(_GrammarProducts)
 }
 function Grammar() {
     this.Terminal = []
@@ -335,6 +336,10 @@ function Grammar() {
                 if (product.readIndex === product.rhs.length) return // 读取的符号(.) 已经在产生式rhs的最右端了
                 let next = product.rhs[product.readIndex]
                 if (this.Terminal.includes(next)) return // terminal 不管
+                if (!this.Variables.includes(next)) {
+                    console.log('[ERROR]:', next)
+                    return
+                }
                 this.SingleProduct[next].forEach(sp => {
                     let p = I.products.filter(_p => _p.id === sp.id && _p.readIndex === 0)
                     if (p.length) return
@@ -348,7 +353,25 @@ function Grammar() {
     }
 
     this.cacluLR0 = () => {
-        calcuCLOSURE()
+        this.Products.unshift({
+            lhs: `${this.Entry}⬆️`,
+            rhs: [[this.Entry]],
+        })
+        this.Variables.unshift(`${this.Entry}⬆️`)
+        this.SingleProduct = new Products(this.Products).Products
+        console.log(this.SingleProduct)
+        this.I = [{
+            id: 0,
+            products:
+                _.cloneDeep(this.SingleProduct[`${this.Entry}⬆️`]).map(product => {
+                    return {
+                        ...product,
+                        readIndex: 0
+                    }
+                }),
+        }]
+        console.log(this.I)
+        calcuCLOSURE(this.I[0])
     }
 
 
@@ -377,7 +400,6 @@ export function ParserGrammar(inputGrammar) {
             })
         }
     })
-    grammar.SingleProduct = new Products(grammar.Products)
     return grammar
 }
 export function RunGrammarTest() {
@@ -385,7 +407,8 @@ export function RunGrammarTest() {
     // grammar.extracLeftCommonFactor()
     // grammar.calcuFollow()
     // grammar.calcuProductFisrt()
-    grammar.calcuLL1()
+    // grammar.calcuLL1()
+    grammar.cacluLR0()
     // grammar.calcuNullable()
     // stringify 不能直接处理set
     // console.log('[TEST LOG]:', JSON.stringify(grammar))
