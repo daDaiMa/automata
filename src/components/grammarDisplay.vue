@@ -208,7 +208,7 @@ export default {
   display: flex;
   margin-top: 10px;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: flex-start;
 }
 .line {
   margin-top: 5px;

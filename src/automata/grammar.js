@@ -74,10 +74,12 @@ function Item(_id = -1, _products = []) {
         this.products.forEach(product => {
             if (product.readIndex === product.rhs.length) {
                 let curr = product.rhs[product.readIndex - 1]
-                if (grammar.Terminal.includes(curr)) {
+                grammar.Terminal.forEach(terminal => {
+                    // 计算LR(0) 陈火旺版本对所有的terminal都做r处理（如果有s处理 则不覆盖 保留s
+                    // 更精确的做法是 只有 Follow(product.lhs) 才做r处理
                     if (grammar.ACTION[this.id] === undefined) grammar.ACTION[this.id] = {}
-                    grammar.ACTION[this.id][curr] = `r${product.id}`
-                }
+                    if (grammar.ACTION[this.id][terminal] === undefined) grammar.ACTION[this.id][terminal] = `r${product.id}`
+                })
                 return
             }
             let curr = product.rhs[product.readIndex]
