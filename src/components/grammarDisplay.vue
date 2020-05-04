@@ -79,10 +79,10 @@
           </tr>
         </table>
       </div>
-      <div v-if="Grammar.I&&Grammar.I.length">
-        <div v-for="I in Grammar.I" v-bind:key="I.id">
-          <closure :closure="I"></closure>
-        </div>
+    </div>
+    <div v-if="Grammar.I&&Grammar.I.length" class="Items-box">
+      <div v-for="I in Grammar.I" v-bind:key="I.id" class="item">
+        <closure :closure="I"></closure>
       </div>
     </div>
   </div>
@@ -247,5 +247,13 @@ export default {
   font-size: 18px;
   width: 140px;
   .disable-selection();
+}
+.Items-box {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content:flex-start;
+  .item{
+    margin:1px;
+  }
 }
 </style>

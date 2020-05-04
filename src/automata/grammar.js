@@ -38,6 +38,64 @@ function Products(_GrammarProducts) {
     }
     this.init(_GrammarProducts)
 }
+
+function Item(_id = -1, _products = []) {
+    this.products = []
+    this.table = {}
+    this.id = _id
+    this.add = product => {
+        if (product.id === undefined || product.id < 0) {
+            console.error('产生式无id')
+            return false
+        }
+        if (product.readIndex === undefined) {
+            console.warn('产生式无readIndex,取默认值0')
+        }
+        if (this.table[product.id] !== undefined && this.table[product.id][product.readIndex || 0] !== undefined) return false
+        this.table[product.id] = this.table[product.id] === undefined ? {} : this.table[product.id]
+        this.table[product.id][product.readIndex || 0] = true
+        this.products.push({ ...product, readIndex: product.readIndex === undefined ? 0 : product.readIndex })
+        return true
+    }
+    !Array.isArray(_products) && (_products = [_products])
+    _products.forEach(product => {
+        this.add(product)
+    })
+    this.compare = (I) => {
+        if (I.products.length !== this.products.length) return false
+        return _.isEqual(I.table, this.table)
+    }
+    this.stepForward = () => {
+        let Items = {}
+        this.products.forEach(product => {
+            if (product.readIndex === product.rhs.length) return
+            let curr = product.rhs[product.readIndex]
+            if (Items[curr] === undefined) Items[curr] = new Item()
+            Items[curr].add({ ...product, readIndex: product.readIndex + 1 })
+        })
+        return Items
+    }
+    this.closure = (grammar) => {
+        let changed = true
+        while (changed) {
+            changed = false
+            this.products.forEach(product => {
+                if (product.readIndex === product.rhs.length) return // 读取的符号(.) 已经在产生式rhs的最右端了
+                let next = product.rhs[product.readIndex]
+                if (grammar.Terminal.includes(next)) return // terminal 不管
+                if (!grammar.Variables.includes(next)) {
+                    console.error('非法符号', next)
+                    return
+                }
+                grammar.SingleProduct[next].forEach(sp => {
+                    if (this.table[sp.id] && this.table[sp.id][sp.readIndex]) return
+                    changed = this.add({ ...sp, readIndex: 0 })
+                })
+            })
+        }
+    }
+}
+
 function Grammar() {
     this.Terminal = []
     this.Variables = []
@@ -313,67 +371,33 @@ function Grammar() {
         })
     }
 
-    /**
-     * 计算项集的闭包
-     * @param {Object} I 项集
-     */
-    const calcuCLOSURE = (I) => {
-        /**
-         * I = [{
-         *         id,
-         *         products=[{
-         *                 id,
-         *                 readIndex,
-         *                 lhs,
-         *                 rhs
-         *         }]
-         *     }]
-         */
-        let changed = true
-        while (changed) {
-            changed = false
-            I.products.forEach(product => {
-                if (product.readIndex === product.rhs.length) return // 读取的符号(.) 已经在产生式rhs的最右端了
-                let next = product.rhs[product.readIndex]
-                if (this.Terminal.includes(next)) return // terminal 不管
-                if (!this.Variables.includes(next)) {
-                    console.log('[ERROR]:', next)
-                    return
-                }
-                this.SingleProduct[next].forEach(sp => {
-                    let p = I.products.filter(_p => _p.id === sp.id && _p.readIndex === 0)
-                    if (p.length) return
-                    let singleProductCopy = _.cloneDeep(sp)
-                    singleProductCopy.readIndex = 0
-                    I.products.push(singleProductCopy)
-                    changed = true
-                })
-            })
-        }
-    }
-
-    this.cacluLR0 = () => {
+    this.cacluItem = () => {
+        // 准备工作
         this.Products.unshift({
             lhs: `${this.Entry}⬆️`,
             rhs: [[this.Entry]],
         })
         this.Variables.unshift(`${this.Entry}⬆️`)
         this.SingleProduct = new Products(this.Products).Products
-        console.log(this.SingleProduct)
-        this.I = [{
-            id: 0,
-            products:
-                _.cloneDeep(this.SingleProduct[`${this.Entry}⬆️`]).map(product => {
-                    return {
-                        ...product,
-                        readIndex: 0
-                    }
-                }),
-        }]
-        console.log(this.I)
-        calcuCLOSURE(this.I[0])
+        this.I = [
+            new Item(0, this.SingleProduct[`${this.Entry}⬆️`])
+        ]
+        this.I[0].closure(this)
+        let queue = [...this.I]
+        while (queue.length) {
+            let I = queue.shift()
+            let newI = I.stepForward()
+            Object.keys(newI).forEach(key => {
+                newI[key].closure(this)
+                for (let _I of this.I) {
+                    if (_I.compare(newI[key])) return
+                }
+                newI[key].id = this.I.length
+                this.I.push(newI[key])
+                queue.push(newI[key])
+            })
+        }
     }
-
 
     this.format = () => {
         for (const key of this.Variables) {
@@ -408,7 +432,7 @@ export function RunGrammarTest() {
     // grammar.calcuFollow()
     // grammar.calcuProductFisrt()
     // grammar.calcuLL1()
-    grammar.cacluLR0()
+    grammar.cacluItem()
     // grammar.calcuNullable()
     // stringify 不能直接处理set
     // console.log('[TEST LOG]:', JSON.stringify(grammar))

@@ -60,7 +60,8 @@ export default {
         { value: "FIRST" },
         { value: "FOLLOW" },
         { value: "Product FIRST" },
-        { value: "LL(1) TABLE" }
+        { value: "LL(1) TABLE" },
+        { value: "LR(0)项集族" }
       ].map((item, id) => {
         return {
           ...item,

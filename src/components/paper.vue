@@ -50,6 +50,9 @@ export default {
         case "LL(1) TABLE":
           grammar.calcuLL1();
           break;
+        case "LR(0)项集族":
+          grammar.cacluItem();
+          break;
         default:
           break;
       }

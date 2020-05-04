@@ -3,8 +3,9 @@
     <div class="body">
       <div v-for="(symbol ,index) in symbols" v-bind:key="symbol._id">
         <div style="display:flex;margin-left:2px">
-          <div v-if="index===readIndex" class="dot-flag">🌕</div>
+          <div v-if="index===readIndex" class="dot-flag">🌑</div>
           <div class="symbol-box">{{symbol.literal}}</div>
+          <div v-if="symbols.length===readIndex&&index===readIndex-1" class="dot-flag">🌑</div>
         </div>
       </div>
     </div>
