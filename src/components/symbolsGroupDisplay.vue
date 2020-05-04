@@ -23,6 +23,8 @@ export default {
   },
   computed: {
     sym_G() {
+      if (!Array.isArray(this.symbolsGroup[0]))
+        return [{ list: this.symbolsGroup, _id: 0 }];
       return this.symbolsGroup.map((item, _id) => {
         return { list: item.filter(i => i), _id };
       });

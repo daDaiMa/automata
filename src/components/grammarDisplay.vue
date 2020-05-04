@@ -80,9 +80,27 @@
         </table>
       </div>
     </div>
-    <div v-if="Grammar.I&&Grammar.I.length" class="Items-box">
-      <div v-for="I in Grammar.I" v-bind:key="I.id" class="item">
-        <closure :closure="I"></closure>
+    <div v-if="Grammar.SingleProduct">
+      <div class="label">Product Identify</div>
+      <div class="single-product-box">
+        <div
+          class="label-and-content line item"
+          v-for="product in Grammar.SingleProduct.ProductsInOrder"
+          v-bind:key="product.id"
+        >
+          <div class="product-id">{{product.id}}</div>
+          <div>
+            <product :product="product"></product>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="Grammar.I&&Grammar.I.length">
+      <div class="label">项集族</div>
+      <div class="Items-box">
+        <div v-for="I in Grammar.I" v-bind:key="I.id" class="item">
+          <closure :closure="I"></closure>
+        </div>
       </div>
     </div>
   </div>
@@ -251,9 +269,21 @@ export default {
 .Items-box {
   display: flex;
   flex-wrap: wrap;
-  justify-content:flex-start;
-  .item{
-    margin:1px;
+  justify-content: flex-start;
+  .item {
+    margin: 1px;
+  }
+}
+
+.single-product-box {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  .item {
+    margin: 3px;
+    border: 1px dotted whitesmoke;
+    padding: 2px;
+    border-radius: 2px;
   }
 }
 </style>

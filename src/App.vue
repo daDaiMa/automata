@@ -7,11 +7,12 @@
 <style>
 body {
   margin: 0px;
-  background-image: linear-gradient(
+  background: rgb(114, 135,254);
+  /* background-image: linear-gradient(
     to bottom right,
     rgb(114, 135, 254),
     rgb(130, 88, 186)
-  );
+  ); */
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

@@ -13,6 +13,7 @@ export const EPSILON = 'ε'
 export const END = '$'
 function Products(_GrammarProducts) {
     this.Products = {}
+    this.ProductsInOrder = []
     /**
      *  this.Products = {
      *      A:[{id,lhs:A,rhs},{id,lhs:A,rhs}]
@@ -27,11 +28,13 @@ function Products(_GrammarProducts) {
             if (!Array.isArray(product.rhs[0])) product.rhs = [product.rhs] // 统一 方便处理
             product.rhs.forEach(rhs => {
                 if (!this.Products[product.lhs]) this.Products[product.lhs] = []
-                this.Products[product.lhs].push({
+                let _p = {
                     id,
                     lhs: product.lhs,
                     rhs
-                })
+                }
+                this.Products[product.lhs].push(_p)
+                this.ProductsInOrder.push(_p)
                 id++
             })
         })
@@ -65,15 +68,51 @@ function Item(_id = -1, _products = []) {
         if (I.products.length !== this.products.length) return false
         return _.isEqual(I.table, this.table)
     }
-    this.stepForward = () => {
+    this.stepForward = (grammar) => {
         let Items = {}
+        let count = 0
         this.products.forEach(product => {
-            if (product.readIndex === product.rhs.length) return
+            if (product.readIndex === product.rhs.length) {
+                let curr = product.rhs[product.readIndex - 1]
+                if (grammar.Terminal.includes(curr)) {
+                    if (grammar.ACTION[this.id] === undefined) grammar.ACTION[this.id] = {}
+                    grammar.ACTION[this.id][curr] = `r${product.id}`
+                }
+                return
+            }
             let curr = product.rhs[product.readIndex]
-            if (Items[curr] === undefined) Items[curr] = new Item()
+            if (Items[curr] === undefined) {
+                Items[curr] = new Item(count + grammar.I.length)
+                count++
+            }
             Items[curr].add({ ...product, readIndex: product.readIndex + 1 })
         })
-        return Items
+        let res = []
+        let fillTable = (symbol, state) => {
+            if (grammar.Terminal.includes(symbol)) {
+                if (grammar.ACTION[this.id] === undefined) grammar.ACTION[this.id] = {}
+                grammar.ACTION[this.id][symbol] = `s${state}`
+            } else if (grammar.Variables.includes(symbol)) {
+                if (grammar.GOTO[this.id] === undefined) grammar.GOTO[this.id] = {}
+                grammar.GOTO[this.id][symbol] = `${state}`
+            } else {
+                console.error('unkonw symbols');
+            }
+        }
+        Object.keys(Items).forEach(key => {
+            Items[key].closure(grammar)
+            for (let _I of grammar.I) {
+                if (_I.compare(Items[key])) {
+                    fillTable(key, _I.id)
+                    return
+                }
+            }
+            Items[key].id = grammar.I.length
+            fillTable(key, Items[key].id)
+            grammar.I.push(Items[key])
+            res.push(Items[key])
+        })
+        return res
     }
     this.closure = (grammar) => {
         let changed = true
@@ -87,7 +126,7 @@ function Item(_id = -1, _products = []) {
                     console.error('非法符号', next)
                     return
                 }
-                grammar.SingleProduct[next].forEach(sp => {
+                grammar.SingleProduct.Products[next].forEach(sp => {
                     if (this.table[sp.id] && this.table[sp.id][sp.readIndex]) return
                     changed = this.add({ ...sp, readIndex: 0 })
                 })
@@ -101,10 +140,12 @@ function Grammar() {
     this.Variables = []
     this.Products = []
     this.SingleProduct = null // 单个产生式 非连写 === !(A--->B|C) ===> [A--->B,A--->C]
-    this.ProductFirst = []
+    this.ProductFirst = [] // todo:把这个融合到SingleProduct中去 
     this.first = {}
     this.follow = {}
     this.LL1 = {}
+    this.ACTION = {}
+    this.GOTO = {}
     this.nullable = new Set()
     this.I = []
     this.Entry = null
@@ -378,22 +419,16 @@ function Grammar() {
             rhs: [[this.Entry]],
         })
         this.Variables.unshift(`${this.Entry}⬆️`)
-        this.SingleProduct = new Products(this.Products).Products
+        this.SingleProduct = new Products(this.Products)
         this.I = [
-            new Item(0, this.SingleProduct[`${this.Entry}⬆️`])
+            new Item(0, this.SingleProduct.Products[`${this.Entry}⬆️`])
         ]
         this.I[0].closure(this)
         let queue = [...this.I]
         while (queue.length) {
             let I = queue.shift()
-            let newI = I.stepForward()
+            let newI = I.stepForward(this)
             Object.keys(newI).forEach(key => {
-                newI[key].closure(this)
-                for (let _I of this.I) {
-                    if (_I.compare(newI[key])) return
-                }
-                newI[key].id = this.I.length
-                this.I.push(newI[key])
                 queue.push(newI[key])
             })
         }
