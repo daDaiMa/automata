@@ -103,12 +103,25 @@
         </div>
       </div>
     </div>
+    <div class="action-goto">
+      <div v-if="Grammar.GOTO">
+        <autotable title="LR0 GOTO" :headers="[placeholder,...Grammar.Variables]" :tabledata="GOTO"></autotable>
+      </div>
+      <div v-if="Grammar.ACTION">
+        <autotable
+          title="LR0 ACTION"
+          :headers="[placeholder,...Grammar.Terminal]"
+          :tabledata="ACTION"
+        ></autotable>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import _ from "loadsh";
 import { SendGrammarToCalcu } from "@/store/actions";
+const placeholder = "  ";
 export default {
   name: "grammarDisplay",
 
@@ -117,7 +130,34 @@ export default {
       type: Object
     }
   },
+  data() {
+    return {
+      placeholder: placeholder
+    };
+  },
   computed: {
+    ACTION() {
+      let res = [];
+      Object.keys(this.grammar.ACTION).forEach(key => {
+        let item = { ...this.grammar.ACTION[key], [placeholder]: key };
+        this.grammar.Terminal.forEach(v => {
+          if (item[v] === undefined) item[v] = "";
+        });
+        res.push(item);
+      });
+      return res;
+    },
+    GOTO() {
+      let res = [];
+      Object.keys(this.grammar.GOTO).forEach(key => {
+        let item = { ...this.grammar.GOTO[key], [placeholder]: key };
+        this.grammar.Variables.forEach(v => {
+          if (item[v] === undefined) item[v] = "";
+        });
+        res.push(item);
+      });
+      return res;
+    },
     Grammar() {
       if (
         !this.grammar ||
@@ -142,7 +182,8 @@ export default {
   components: {
     symbolList: () => import("../components/symbolsDisplay"),
     product: () => import("../components/productDisplay"),
-    closure: () => import("../components/closureDisPlay")
+    closure: () => import("../components/closureDisPlay"),
+    autotable: () => import("../components/table")
   },
   methods: {
     copy2calcu() {
@@ -182,6 +223,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.action-goto {
+  display: flex;
+}
 .ll1-table {
   // border: 1px solid whitesmoke;
   font-size: 18px;

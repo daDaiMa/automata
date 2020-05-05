@@ -15,3 +15,8 @@
 ##### 计算LR(0)项集族
 
 ![image-20200504154940148](README.assets/image-20200504154940148.png)
+
+##### 计算LR0 GOTO & ACTION
+
+![image-20200505104713405](README.assets/image-20200505104713405.png)
+

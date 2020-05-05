@@ -73,7 +73,6 @@ function Item(_id = -1, _products = []) {
         let count = 0
         this.products.forEach(product => {
             if (product.readIndex === product.rhs.length) {
-                let curr = product.rhs[product.readIndex - 1]
                 grammar.Terminal.forEach(terminal => {
                     // 计算LR(0) 陈火旺版本对所有的terminal都做r处理（如果有s处理 则不覆盖 保留s
                     // 更精确的做法是 只有 Follow(product.lhs) 才做r处理
@@ -93,7 +92,7 @@ function Item(_id = -1, _products = []) {
         let fillTable = (symbol, state) => {
             if (grammar.Terminal.includes(symbol)) {
                 if (grammar.ACTION[this.id] === undefined) grammar.ACTION[this.id] = {}
-                grammar.ACTION[this.id][symbol] = `s${state}`
+                grammar.ACTION[this.id][symbol] = symbol === END ? 'acc' : `s${state}`
             } else if (grammar.Variables.includes(symbol)) {
                 if (grammar.GOTO[this.id] === undefined) grammar.GOTO[this.id] = {}
                 grammar.GOTO[this.id][symbol] = `${state}`
@@ -418,9 +417,10 @@ function Grammar() {
         // 准备工作
         this.Products.unshift({
             lhs: `${this.Entry}⬆️`,
-            rhs: [[this.Entry]],
+            rhs: [[this.Entry, END]],
         })
         this.Variables.unshift(`${this.Entry}⬆️`)
+        this.Terminal.push(END)
         this.SingleProduct = new Products(this.Products)
         this.I = [
             new Item(0, this.SingleProduct.Products[`${this.Entry}⬆️`])
